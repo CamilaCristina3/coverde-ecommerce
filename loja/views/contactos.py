@@ -1,17 +1,18 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
-from loja.models import Mensagens_de_Contactos
+from loja.models import MensagemDeContacto
 
 def contactos_view(request):
-    if request.method == "POST":
-        nome = request.POST["nome"]
-        email = request.POST["email"]
-        mensagem = request.POST["mensagem"]
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        mensagem = request.POST.get('mensagem')
 
-        
-        Mensagens_de_Contactos.objects.create(nome=nome, email=email, mensagem=mensagem)
+        MensagemDeContacto.objects.create(
+            nome=nome,
+            email=email,
+            mensagem=mensagem
+        )
 
-        messages.success(request, "A sua mensagem foi enviada com sucesso!")
-        return redirect("homepage")  
+        return render(request, 'loja/contacto_sucesso.html')
 
-    return render(request, "contactos.html")
+    return render(request, 'loja/contacto.html')

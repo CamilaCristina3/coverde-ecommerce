@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-s6#@*xr_2j##&q!+w9d%3f%2hw!x(ld&eul-jx2#@%5vws5xf%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.56.36']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'loja',
     'channels',
     'chat',
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     
 ]
 
 ROOT_URLCONF = 'projetoPDI.urls'
@@ -95,9 +97,9 @@ LOGIN_URL = "/login/"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'projetoPDI',
-        'USER': 'saul',
-        'PASSWORD': 'projetopdi',
+        'NAME': 'coverde',
+        'USER': 'root',
+        'PASSWORD': '0000',
         'HOST': 'localhost',
         'PORT': '3306',  # Default MariaDB port
         'OPTIONS': {

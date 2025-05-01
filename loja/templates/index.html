@@ -1,91 +1,85 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'imgs/favicon.svg' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/fonts/customfonts.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jomhuria&display=swap" rel="stylesheet">
-    
-</head>
-<body style="background-color: #EAEAEA;">
 
-    <!-- Navbar -->
-    {% include 'navbar.html' %}
+{% block title %}Início - COVERDE{% endblock %}
 
+{% block content %}
+<div class="container py-5">
 
-    <!-- Imagem principal -->
-    <div class="container-fluid p-0 rounded" style="background-color: transparent;">
-        <img class="object-fit-contain" src="{% static 'imgs/cover2.png' %}" style="width: 100%; height: 100%;" alt="">
+  <!-- ✅ HERO SECTION -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-success">🌿 Compra direto do produtor!</h1>
+    <p class="lead text-muted">Produtos locais, frescos e sustentáveis ao teu alcance.</p>
+    <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{% url 'produtos' %}" class="btn btn-orange px-4 py-2 rounded-pill">COMEÇA A COMPRAR</a>
+      <a href="{% url 'upload_product' %}" class="btn btn-outline-success px-4 py-2 rounded-pill">COMEÇA A VENDER</a>
+    </div>
+  </div>
 
-        <div class="input-group mt-3" style="position: absolute; bottom: 80%; left: 10%; width: 75%;">
-            <input type="text" id="searchInput" class="form-control rounded-start-pill border-end-0 border-black" placeholder="Pesquisa" aria-label="Pesquisa" onkeyup="filterProducts()">
-            <button class="btn rounded-end-pill border-black border-start-0" type="button" style="background-color: white; height: 55px;">
-                <img src="{% static 'imgs/icons/iconpesquisa.svg' %}" style="margin-bottom: 3px;" alt="">
-            </button>
+  <!-- ✅ CATEGORIAS EM DESTAQUE -->
+  <div class="row text-center mb-5">
+    <div class="col-md-4">
+      <div class="p-3 bg-white rounded shadow-sm">
+        <h5 class="fw-bold">🍎 Frutas</h5>
+        <p class="text-muted">Doces, frescas e da época.</p>
+      </div>
+    </div>
+    <div class="col-md-4 mt-3 mt-md-0">
+      <div class="p-3 bg-white rounded shadow-sm">
+        <h5 class="fw-bold">🥕 Legumes</h5>
+        <p class="text-muted">Colhidos com cuidado e sabor.</p>
+      </div>
+    </div>
+    <div class="col-md-4 mt-3 mt-md-0">
+      <div class="p-3 bg-white rounded shadow-sm">
+        <h5 class="fw-bold">🌿 Ervas Aromáticas</h5>
+        <p class="text-muted">Perfume e frescura na tua cozinha.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ PRODUTOS EM DESTAQUE -->
+  <h2 class="text-center fw-bold mb-4">🛒 Produtos em Destaque</h2>
+  <div class="row g-4 mb-5">
+    {% for produto in produtos %}
+      <div class="col-md-3 col-sm-6">
+        <div class="card h-100 shadow-sm border-0">
+          {% with imagem=produto.imagens.first %}
+            {% if imagem %}
+              <img src="{{ imagem.imagem.url }}" class="card-img-top" alt="{{ produto.nome }}">
+            {% else %}
+              <img src="{% static 'imgs/placeholder.jpg' %}" class="card-img-top" alt="Imagem indisponível">
+            {% endif %}
+          {% endwith %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ produto.nome }}</h5>
+            <p class="text-muted mb-2"><strong>{{ produto.preco }} €</strong></p>
+            <a href="{% url 'produto_detail' produto.id %}" class="btn btn-outline-success mt-auto">Ver detalhes</a>
+          </div>
         </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center">
+        <p class="text-muted">Nenhum produto disponível de momento.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ CONSUMIDOR & PRODUTOR BLOCO -->
+  <div class="row justify-content-center gap-4 px-3 pb-5">
+    <!-- Consumidor -->
+    <div class="col-md-5 bg-white shadow rounded p-4 text-center">
+      <h3 class="fw-bold">É consumidor?</h3>
+      <p>Acede facilmente aos produtos mais saudáveis e descobre a origem dos alimentos.</p>
+      <a href="{% url 'produtos' %}" class="btn btn-orange px-4 py-2 rounded-pill mt-3">COMEÇA A COMPRAR</a>
     </div>
-
-    <div class="container">
-        Categorias
+    <!-- Produtor -->
+    <div class="col-md-5 bg-white shadow rounded p-4 text-center">
+      <h3 class="fw-bold">É produtor?</h3>
+      <p>Vende os teus produtos a um preço justo. Recebe diretamente do consumidor.</p>
+      <a href="{% url 'upload_product' %}" class="btn btn-orange px-4 py-2 rounded-pill mt-3">COMEÇA A VENDER</a>
     </div>
+  </div>
 
-    <div class="container-fluid p-5 mt-5">
-        <div class="row gy-4 mb-5" id="productList">
-            {% for produto in produtos %}
-            <div class="col-xl-3 col-md-4 col-sm-6 product-item">
-                <div class="card shadow rounded-2" style="width: 100%;height:470px; background-color: white;">
-                    <div class="p-0" style="width: 100%; height: 250px; background-color: white;">
-                        {% with produto.images.all|first as image %}
-                            {% if image %}
-                            <a href="{% url 'produto_detail' produto.id %}">
-                                <img src="{{ image.image.url }}" class="img-fluid" style="width: 100%; height: 250px; object-fit:cover;" alt="{{ produto.nome }}">
-                            {% else %}
-                                <img src="{% static 'imgs/default-product.jpg' %}" class="img-fluid" style="width: 100%; height: 100%; object-fit:cover;" alt="Sem imagem">
-                            {% endif %}
-                            </a>
-                        {% endwith %}
-                    </div>
-            
-                    <div class="card-body" style="overflow: hidden;">
-                        <a href="{% url 'produto_detail' produto.id %}" class="h5 card-title jomhuria-regular fs-1" style="text-decoration: none; line-height: 0;">{{ produto.nome }}</a>
-                        <p class="card-text jomhuria-regular fs-2" style="line-height: 1;"><strong>Preço:</strong> €{{ produto.preco }}</p>
-                        <p class="card-text text-muted mt-5 jomhuria-regular fs-3" style="line-height: 1;">Adicionado por: <strong>{{ produto.user.primeiro_nome }} {{ produto.user.ultimo_nome }}</strong></p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-            
-        </div>
-    </div>
-    <h1 class="text-center mt-5 mb-5 jomhuria-regular fs-custom3" style="color: rgba(150, 150, 150, 0.425);">Chegou ao fim...</h1>
-
-    <!-- Footer -->
-    {% include 'footer.html' %}
-
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script>
-        function filterProducts() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toLowerCase();
-            const productList = document.getElementById('productList');
-            const products = productList.getElementsByClassName('product-item');
-
-            for (let i = 0; i < products.length; i++) {
-                const title = products[i].getElementsByClassName('card-title')[0].textContent;
-                if (title.toLowerCase().indexOf(filter) > -1) {
-                    products[i].style.display = "";
-                } else {
-                    products[i].style.display = "none";
-                }
-            }
-        }
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}

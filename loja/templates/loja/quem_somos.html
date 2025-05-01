@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Quem Somos - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- ✅ CAPA -->
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-success">🌱 Bem-vindo à COVERDE</h1>
+    <p class="lead text-muted">Aqui, ligamos quem produz com quem consome — de forma justa, direta e sustentável.</p>
+  </div>
+
+  <!-- ✅ MISSÃO -->
+  <div class="mb-5">
+    <h3 class="fw-bold text-success">A nossa missão</h3>
+    <p>
+      A COVERDE nasceu com um propósito simples: aproximar consumidores conscientes de produtores locais,
+      promovendo uma alimentação saudável, a preços justos — para todos.
+    </p>
+    <p>
+      Acreditamos que cada euro deve ir para quem cultiva, e cada refeição deve refletir a qualidade da origem.
+    </p>
+  </div>
+
+  <!-- ✅ BENEFÍCIOS PARA CONSUMIDORES -->
+  <div class="row align-items-center mb-5">
+    <div class="col-md-6">
+      <img src="{% static 'imgs/consumidor.png' %}" class="img-fluid rounded shadow-sm" alt="Consumidor feliz">
+    </div>
+    <div class="col-md-6">
+      <h4 class="fw-bold text-success">🛒 Para quem consome</h4>
+      <ul class="list-unstyled mt-3">
+        <li>✔ Produtos frescos e locais, entregues diretamente</li>
+        <li>✔ Poupança real ao comprar sem intermediários</li>
+        <li>✔ Transparência na origem e modo de produção</li>
+        <li>✔ Apoio à economia e sustentabilidade regional</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ✅ BENEFÍCIOS PARA PRODUTORES -->
+  <div class="row align-items-center flex-md-row-reverse mb-5">
+    <div class="col-md-6">
+      <img src="{% static 'imgs/produtor.png' %}" class="img-fluid rounded shadow-sm" alt="Produtor feliz">
+    </div>
+    <div class="col-md-6">
+      <h4 class="fw-bold text-success">🌾 Para quem produz</h4>
+      <ul class="list-unstyled mt-3">
+        <li>✔ Venda sem taxas abusivas</li>
+        <li>✔ Definição livre do preço e da quantidade</li>
+        <li>✔ Ligação direta ao consumidor final</li>
+        <li>✔ Reconhecimento pelo seu trabalho e saber</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ✅ FECHO CONVIDATIVO -->
+  <div class="text-center bg-light p-5 rounded shadow-sm">
+    <h3 class="fw-bold text-success mb-3">Juntos, mudamos a forma como o mundo consome 🍃</h3>
+    <p class="lead text-muted mb-4">Faz parte da mudança: apoia o produtor. Escolhe o natural. Vive COVERDE.</p>
+    <a href="{% url 'produtos' %}" class="btn btn-orange px-4 py-2 rounded-pill">EXPLORAR PRODUTOS</a>
+  </div>
+
+</div>
+{% endblock %}

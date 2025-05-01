@@ -11,15 +11,15 @@ class Login(View):
         return render(request, "login.html")
 
     def post(self, request):
-            email = request.POST["username"]
+            email = request.POST["email"]
             password = request.POST["password"]
 
             # Authenticate using Django's system
-            user = authenticate(request, username=email, password=password)
+            user = authenticate(request, email=email, password=password)
 
             if user is not None:
                 login(request, user)  # ✅ This sets up session & request.user
                 return redirect("homepage")
             else:
-                messages.error(request, "Email ou senha inválidos. Tente novamente.")
+                messages.error(request, "E-mail ou senha inválidos. Tente novamente.")
                 return render(request, "login.html")

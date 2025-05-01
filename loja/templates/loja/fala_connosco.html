@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Fala Connosco - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Cabeçalho -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-success">📬 Fala Connosco</h1>
+    <p class="text-muted">Estamos aqui para ouvir-te — seja para dúvidas, sugestões ou parcerias com impacto.</p>
+  </div>
+
+  <div class="row">
+    <!-- ✅ Formulário -->
+    <div class="col-md-7 mb-4">
+      <div class="bg-white shadow-sm p-4 rounded">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" name="nome" id="nome" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="mensagem" class="form-label">Mensagem</label>
+            <textarea name="mensagem" id="mensagem" rows="5" class="form-control" required placeholder="Escreve a tua mensagem aqui..."></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-orange px-5 py-2 rounded-pill">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ✅ Informações institucionais -->
+    <div class="col-md-5">
+      <div class="bg-light p-4 rounded shadow-sm h-100 d-flex flex-column justify-content-center">
+        <h5 class="fw-bold text-success mb-3">📌 Informações de Contacto</h5>
+        <p class="mb-2"><strong>Email:</strong> apoio@coverde.pt</p>
+        <p class="mb-2"><strong>Telefone:</strong> +351 912 345 678</p>
+        <p class="mb-2"><strong>Morada:</strong><br>Rua da Agricultura 123<br>Lisboa, Portugal</p>
+        <hr>
+        <p class="text-muted mb-0"><strong>Horário de atendimento:</strong><br>Seg. a Sex. das 09h às 17h</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

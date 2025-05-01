@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Carrinho - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-success fw-bold mb-4">🛒 O teu Carrinho</h2>
+
+  {% if produtos %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in produtos %}
+          <tr>
+            <td>{{ item.produto.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.subtotal|floatformat:2 }} €</td>
+            <td>
+              <a href="{% url 'remover_do_carrinho' item.produto.id %}" class="btn btn-outline-danger btn-sm">Remover</a>
+            </td>
+          </tr>
+        {% endfor %}
+        <tr class="fw-bold">
+          <td colspan="2" class="text-end">Total:</td>
+          <td>{{ total|floatformat:2 }} €</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="text-end mt-3">
+      <a href="{% url 'finalizar_compra' %}" class="btn btn-success rounded-pill px-4">Finalizar Compra</a>
+    </div>
+  {% else %}
+    <div class="alert alert-info">O teu carrinho está vazio.</div>
+  {% endif %}
+</div>
+{% endblock %}

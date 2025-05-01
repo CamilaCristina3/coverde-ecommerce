@@ -1,31 +1,29 @@
 from django.shortcuts import render, redirect
-from loja.models import User, Product, Categoria
+from loja.models import User, Produto, Categoria
+
 from django.views import View
 
-# Create your views here.
+# Página principal com todos os produtos e categorias
 class Index(View):
     def get(self, request):
         categorias = Categoria.objects.all()
-        produtos = Product.objects.all()
-        
-        
+        produtos = Produto.objects.all()
         user = request.user
         return render(request, "index.html", {"categorias": categorias, "produtos": produtos, "user": user})
 
-
-        
+# Página loja com filtro por categoria (ex: ?categoria=2)
 def loja(request):
-    products = None
-    categorias = Categoria.get_all_categorias()
-    categoriaID = request.GET.get('categoria')
-    if categoriaID:
-        products = Products.get_all_products_by_categoriaid(categoriaID)
+    categoria_id = request.GET.get('categoria')
+    categorias = Categoria.objects.all()
+
+    if categoria_id:
+        produtos = Produto.objects.filter(categoria_id=categoria_id)
     else:
-        products = Products.get_all_products()
+        produtos = Produto.objects.all()
 
-    data = {}
-    data['products'] = products
-    data['categorias'] = categorias
+    context = {
+        'produtos': produtos,
+        'categorias': categorias
+    }
 
-    print('you are : ', request.session.get('email'))
-    return render(request, 'index.html', data)
+    return render(request, 'index.html', context)

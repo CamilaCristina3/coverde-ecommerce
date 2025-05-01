@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ produto.nome }} - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Voltar -->
+  <a href="{% url 'produtos' %}" class="text-success mb-4 d-inline-block">
+    ← Voltar aos produtos
+  </a>
+
+  <div class="row">
+    <!-- ✅ Imagem do Produto -->
+    <div class="col-md-6">
+      {% with imagem=produto.imagens.first %}
+        {% if imagem %}
+          <img src="{{ imagem.imagem.url }}" class="img-fluid rounded shadow-sm" alt="{{ produto.nome }}">
+        {% else %}
+          <img src="{% static 'imgs/placeholder.jpg' %}" class="img-fluid rounded shadow-sm" alt="Imagem indisponível">
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <!-- ✅ Detalhes do Produto -->
+    <div class="col-md-6">
+      <h2 class="fw-bold">{{ produto.nome }}</h2>
+      <p class="text-muted">{{ produto.quantidade }}</p>
+      <h4 class="text-success fw-bold mb-3">{{ produto.preco }} €</h4>
+
+      <p>
+        <span class="badge bg-success">{{ produto.get_modo_producao_display }}</span>
+      </p>
+
+      <p class="mt-4">{{ produto.descricao|default:"Este produto ainda não tem descrição." }}</p>
+
+      <ul class="list-unstyled text-muted mt-3">
+        <li><strong>Categoria:</strong> {{ produto.categoria.nome }}</li>
+        {% if produto.data_colheita %}
+          <li><strong>Colhido em:</strong> {{ produto.data_colheita }}</li>
+        {% endif %}
+      </ul>
+
+      <!-- Botão principal -->
+      <div class="mt-4">
+        <a href="{% url 'fala_connosco' %}" class="btn btn-orange px-4 py-2 rounded-pill">Contactar Produtor</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Informações do Produtor -->
+  <div class="mt-5 pt-4 border-top">
+    <h4 class="text-success">Sobre o produtor</h4>
+    <div class="d-flex align-items-center gap-3 mt-3">
+      {% if produto.produtor.foto_perfil %}
+        <img src="{{ produto.produtor.foto_perfil.url }}" alt="Produtor" class="rounded-circle" width="60" height="60">
+      {% else %}
+        <img src="{% static 'imgs/icons/iconperson.svg' %}" alt="Sem foto" class="rounded-circle" width="60">
+      {% endif %}
+
+      <div>
+        <p class="fw-bold mb-0">{{ produto.produtor.primeiro_nome }} {{ produto.produtor.ultimo_nome }}</p>
+        <small class="text-muted">{{ produto.produtor.localidade }}</small>
+        {% if produto.produtor.descricao %}
+          <p class="mt-2">{{ produto.produtor.descricao }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

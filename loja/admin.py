@@ -1,65 +1,65 @@
 from django.contrib import admin
-from django.utils.html import format_html
-from loja.models import User, Product, Categoria
-from loja.models import Mensagens_de_Contactos
-from loja.models import ProductImage
-# Register your models here.
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from loja.models import User, Categoria, Produto, ImagemProduto, MensagemDeContacto
 
-
-class UserAdmin(admin.ModelAdmin):
-    list_display = ("id", "primeiro_nome", "ultimo_nome", "email", "telemovel", "profile_picture_preview", "cidade")
-    search_fields = ("email", "primeiro_nome", "ultimo_nome")
-    list_filter = ("email",)
-    ordering = ("id",)
-    readonly_fields = ["profile_picture_preview"]
-
+# === Personalização do UserAdmin ===
+class UserAdmin(BaseUserAdmin):
+    list_display = ('email', 'primeiro_nome', 'ultimo_nome', 'perfil', 'is_staff')
+    list_filter = ('perfil', 'is_staff', 'is_superuser')
+    search_fields = ('email', 'primeiro_nome', 'ultimo_nome')
+    ordering = ('email',)
+    filter_horizontal = ('categorias_produzidas',)
 
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Informações Pessoais", {"fields": ("primeiro_nome", "ultimo_nome", "telemovel", "profile_picture", "cidade")}),
-        ("Permissões", {"fields": ("is_active", "is_staff", "is_superuser")}),
+        (None, {'fields': ('email', 'password')}),
+        ('Informações pessoais', {
+            'fields': (
+                'primeiro_nome', 'ultimo_nome', 'telemovel', 'perfil',
+                'foto_perfil', 'descricao', 'localidade'
+            )
+        }),
+        ('Permissões', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
+        }),
+        ('Categorias produzidas', {'fields': ('categorias_produzidas',)}),
     )
 
-    def profile_picture_preview(self, obj):
-        if obj.profile_picture:
-            return format_html('<img src="{}" width="50" height="50" style="border-radius: 50%;">', obj.profile_picture.url)
-        return "Sem imagem"
-    
-    profile_picture_preview.short_description = "Foto de Perfil"
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': (
+                'email', 'primeiro_nome', 'ultimo_nome', 'telemovel',
+                'perfil', 'password1', 'password2'
+            ),
+        }),
+    )
 
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome", "preco", "categoria")
-    search_fields = ("nome",)
-    list_filter = ("categoria",)
-    ordering = ("id",)
+# === Imagens Inline no Produto ===
+class ImagemProdutoInline(admin.TabularInline):
+    model = ImagemProduto
+    extra = 1
 
+# === Produto ===
+class ProdutoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'categoria', 'produtor', 'preco', 'modo_producao')
+    list_filter = ('categoria', 'modo_producao')
+    search_fields = ('nome', 'descricao')
+    inlines = [ImagemProdutoInline]
+
+# === Categoria ===
 class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome")
-    search_fields = ("nome",)
-    ordering = ("id",)
+    list_display = ('nome',)
+    search_fields = ('nome',)
 
-class MensagensDeContactoAdmin(admin.ModelAdmin):
-    list_display = ("nome", "email", "data_envio")
-    search_fields = ("nome", "email")
-    ordering = ("-data_envio",)
+# === Mensagens de Contacto ===
+class MensagemDeContactoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'email', 'data_envio')
+    search_fields = ('nome', 'email', 'mensagem')
+    readonly_fields = ('nome', 'email', 'mensagem', 'data_envio')
 
-class ImagensDeProdutoAdmin(admin.ModelAdmin):
-    list_display = ("product", "image")
-    search_fields = ("product", )
-    ordering = ("product",)
-
-#class ProductImage(models.Model):
-    #product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
-    #image = models.ImageField(upload_to="uploads/products/")
-
-    #def __str__(self):
-    #    return f"Image for {self.product.nome}"
-
-
-
-# Register models
+# === Registro dos modelos com admin personalizados ===
 admin.site.register(User, UserAdmin)
-admin.site.register(Product, ProductAdmin)
 admin.site.register(Categoria, CategoriaAdmin)
-admin.site.register(Mensagens_de_Contactos, MensagensDeContactoAdmin)
-admin.site.register(ProductImage, ImagensDeProdutoAdmin)
+admin.site.register(Produto, ProdutoAdmin)
+admin.site.register(ImagemProduto)  # Inline já está no Produto, mas pode ser acessado diretamente também
+admin.site.register(MensagemDeContacto, MensagemDeContactoAdmin)

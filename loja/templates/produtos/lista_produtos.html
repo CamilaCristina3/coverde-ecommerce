@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Produtos - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Título -->
+  <div class="mb-4 text-center">
+    <h1 class="fw-bold">🌿 Produtos Disponíveis</h1>
+    <p class="text-muted">Explora os produtos frescos diretamente dos produtores locais.</p>
+  </div>
+
+  <div class="row">
+    <!-- ✅ FILTRO LATERAL -->
+    <div class="col-md-3 mb-4">
+      <div class="bg-white p-4 rounded shadow-sm">
+        <h5 class="fw-bold mb-3">Filtrar por Categoria</h5>
+        <form method="get" action="{% url 'produtos' %}">
+          <div class="list-group">
+            <a href="{% url 'produtos' %}" class="list-group-item list-group-item-action {% if not request.GET.categoria %}active{% endif %}">
+              Todas as Categorias
+            </a>
+            {% for categoria in categorias %}
+              <a href="?categoria={{ categoria.id }}" class="list-group-item list-group-item-action {% if categoria.id|stringformat:'s' == request.GET.categoria %}active{% endif %}">
+                {{ categoria.nome }}
+              </a>
+            {% endfor %}
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ✅ GRELHA DE PRODUTOS -->
+    <div class="col-md-9">
+      <div class="row g-4">
+        {% for produto in produtos %}
+          <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+              {% with imagem=produto.imagens.first %}
+                {% if imagem %}
+                  <img src="{{ imagem.imagem.url }}" class="card-img-top" alt="{{ produto.nome }}">
+                {% else %}
+                  <img src="{% static 'imgs/placeholder.jpg' %}" class="card-img-top" alt="Imagem indisponível">
+                {% endif %}
+              {% endwith %}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ produto.nome }}</h5>
+                <p class="text-muted">{{ produto.quantidade }} — <strong>{{ produto.preco }} €</strong></p>
+                <a href="{% url 'produto_detail' produto.id %}" class="btn btn-outline-success">Ver detalhes</a>
+
+                {% if user.is_authenticated and user.perfil == 'consumidor' %}
+                <form method="post" action="{% url 'adicionar_ao_carrinho' produto.id %}">
+                  {% csrf_token %}
+                  <div class="input-group mt-2">
+                    <input type="number" name="quantidade" min="1" value="1" class="form-control form-control-sm" required>
+                    <button type="submit" class="btn btn-success btn-sm">Adicionar</button>
+                  </div>
+                </form>
+              {% endif %}
+              
+
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12 text-center">
+            <p class="text-muted">Nenhum produto encontrado para esta categoria.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

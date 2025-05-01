@@ -1,105 +1,72 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registar step-2</title>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/fonts/customfonts.css' %}">
-    <link rel="icon" type="image/x-icon" href="{% static 'imgs/favicon.svg' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jomhuria&display=swap" rel="stylesheet">
-</head>
-<body style="background-color: #EAEAEA;">
-    
-    <!-- Navbar -->
-    {% include 'navbar.html' %}
-    
-    <div class="container p-0 rounded mt-5 mb-5" style="background-color: white; height: 1080px; overflow: hidden;">
-        <div class="row row-cols-1 row-cols-xxl-2 row-cols-lg-2 row-cols-sm-1">
-            
-            <!-- Colun da imagem -->
-            <div class="col-6 d-none d-lg-block " style="overflow: hidden;">
-                <img class="img-fluid d-none d-lg-block p-0 g-0 rounded-start" 
-                     style="object-fit:fill;"
-                     src="{% static 'imgs/drphil.png' %}" alt="">
-            </div>
+{% block title %}Completar Registo - COVERDE{% endblock %}
 
-            <!-- Form -->
-            <div class="col-12">
-                <form class="ms-5" method="post">
-                    {% csrf_token %}
-                    
-                    <h3 class="jomhuria-regular fs-custom mt-5">Continue o Registo.</h3>
-                    {% if error %}
-                        <div class="alert alert-danger">{{ error }}</div>
-                    {% endif %}
-                    <!--Primeiro nome-->
-                    <h4 class="jomhuria-regular fs-1 mt-3">Nome</h4>
-                    <div class="container ms-0 p-0">
-                        <div class="input-group">
-                            <input type="text" class="form-control rounded-4 border-0 jomhuria-regular fs-3 align-self-center me-5" 
-                                   style="background-color: #D9D9D9;" name="primeiro_nome" value="{{ values.primeiro_nome }}" required>
-                        </div>
-                    </div>
-                    <!--Ultimo Nome-->
-                    <h4 class="jomhuria-regular fs-1 mt-3">Apelido</h4>
-                    <div class="container ms-0 p-0">
-                        <div class="input-group">
-                            <input type="text" class="form-control rounded-4 border-0 jomhuria-regular fs-3 align-self-center me-5" 
-                                   style="background-color: #D9D9D9;" name="ultimo_nome" value="{{ values.ultimo_nome }}" required>
-                        </div>
-                    </div>
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center py-5">
+  <div class="col-md-7 bg-white p-4 rounded shadow-sm">
 
-                    <h4 class="jomhuria-regular fs-1 mt-3">Nrº de Telemovel <span style="color: #D9D9D9;"> (Opcional) </span> </h4>
-                    <div class="container ms-0 p-0">
-                        <div class="input-group">
-                            <input type="text" class="form-control rounded-4 border-0 jomhuria-regular fs-3 align-self-center me-5" 
-                                   style="background-color: #D9D9D9;" name="ultimo_nome" value="{{ values.telemovel }}">
-                        </div>
-                    </div>
+    <h3 class="text-success text-center fw-bold mb-4">📝 Criar Conta</h3>
 
-                    <h4 class="jomhuria-regular fs-1 mt-3">Cidade <span style="color: #D9D9D9;"> (Opcional) </span> </h4>
-                    <div class="container ms-0 p-0">
-                        <select class="form-select jomhuria-regular fs-2" style="width: 250px; line-height: 1;" name="cidade" required>
-                          <option value="">Selecione a cidade</option>
-                          {% for valor, nome in cidades %}
-                            <option value="{{ valor }}">{{ nome }}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Password -->
-                    <h4 class="jomhuria-regular fs-1 mt-3">Password</h4>
-                    <div class="container ms-0 p-0">
-                        <input type="password" name="password" class="form-control rounded-4 border-0 jomhuria-regular fs-3" style="background-color: #D9D9D9;" required>
-                    </div>
-
-                    <!-- Confirmar Password -->
-                    <h4 class="jomhuria-regular fs-1 mt-3">Confirmar Password</h4>
-                    <div class="container ms-0 p-0">
-                        <input type="password" name="confirm_password" class="form-control rounded-4 border-0 jomhuria-regular fs-3" style="background-color: #D9D9D9;" required>
-                    </div>
-
-                    <button class="btn jomhuria-regular mt-5 fs-1 rounded-4 text-center" type="submit" 
-                            style="background-color: black; color: white; width: 300px; height: 70px;">
-                        Registar.
-                    </button>
-                    
-                </form>
-                
-                <div class="div jomhuria-regular fs-3 ms-5" style="color: gray;">
-                    Já tem conta?
-                    <a href="{% url 'login' %}" style="color: black; text-decoration: none;">Login</a>
-                </div>
-            </div>
-
+    <!-- Mensagens (erros ou alertas) -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
-    </div>
+      {% endfor %}
+    {% endif %}
 
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-</body>
-</html>
+    <!-- Formulário -->
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="primeiro_nome" class="form-label">Primeiro Nome</label>
+          <input type="text" name="primeiro_nome" id="primeiro_nome" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label for="ultimo_nome" class="form-label">Último Nome</label>
+          <input type="text" name="ultimo_nome" id="ultimo_nome" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="telemovel" class="form-label">Telemóvel</label>
+        <input type="text" name="telemovel" id="telemovel" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="perfil" class="form-label">Perfil</label>
+        <select name="perfil" id="perfil" class="form-select" required>
+          <option value="">Seleciona o teu perfil</option>
+          <option value="consumidor">Sou consumidor</option>
+          <option value="produtor">Sou produtor</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Palavra-passe</label>
+        <input type="password" name="password" id="password" class="form-control" required>
+      </div>
+
+      <!-- ✅ CONSENTIMENTO -->
+      <div class="form-check mt-3 mb-4">
+        <input class="form-check-input" type="checkbox" name="consentimento" id="consentimento" required>
+        <label class="form-check-label" for="consentimento">
+          Aceito o tratamento dos meus dados pessoais conforme a <a href="{% url 'politica_privacidade' %}" target="_blank">Política de Privacidade</a>.
+        </label>
+      </div>
+
+      <!-- Botão -->
+      <div class="d-grid">
+        <button type="submit" class="btn btn-success rounded-pill">Criar Conta</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

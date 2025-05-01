@@ -16,16 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls.static import static 
-from . import settings 
-from loja.views.upload_product import upload_product_view
+from django.conf import settings
+from django.conf.urls.static import static
+import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('loja.urls')), 
-    path("chat/", include("chat.urls")),
-    path("upload-product/", upload_product_view, name="upload_product"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
+    path('', include('loja.urls')),
+]
 
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Servir ficheiros media
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # Serve static apenas se STATICFILES_DIRS estiver definido
+    static_dir = getattr(settings, 'STATICFILES_DIRS', [])
+    if static_dir:
+        urlpatterns += static(settings.STATIC_URL, document_root=static_dir[0])
+    else:
+        # fallback padrão
+        urlpatterns += static(settings.STATIC_URL, document_root=os.path.join(settings.BASE_DIR, 'static'))
+
