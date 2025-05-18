@@ -1,148 +1,221 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator
+from django.utils.text import slugify
 
 
-def user_directory_path(instance, filename):
-    return f'uploads/profiles/{instance.id}/{filename}'
+# -------------------------
+# Gestão de utilizadores
+# -------------------------
 
-
-def product_image_upload_path(instance, filename):
-    return f"uploads/products/{instance.produto.id}/{filename}"
-
-
-# === GERENCIADOR DE USUÁRIOS PERSONALIZADOS ===
-class UserManager(BaseUserManager):
-    def create_user(self, email, primeiro_nome, ultimo_nome, telemovel, password=None, perfil='consumidor'):
+class UtilizadorManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError("O email é obrigatório!")
+            raise ValueError(_('O email é obrigatório'))
         email = self.normalize_email(email)
-        user = self.model(
-            email=email,
-            primeiro_nome=primeiro_nome,
-            ultimo_nome=ultimo_nome,
-            telemovel=telemovel,
-            perfil=perfil
-        )
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, primeiro_nome, ultimo_nome, telemovel, password=None):
-        user = self.create_user(
-            email=email,
-            primeiro_nome=primeiro_nome,
-            ultimo_nome=ultimo_nome,
-            telemovel=telemovel,
-            password=password,
-            perfil='produtor'
-        )
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
-        return user
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
 
 
-# === CATEGORIA ===
+class Utilizador(AbstractUser):
+    class TipoUtilizador(models.TextChoices):
+        CONSUMIDOR = 'C', _('Consumidor')
+        PRODUTOR = 'P', _('Produtor')
+        ADMIN = 'A', _('Administrador')
+
+    username = None
+    email = models.EmailField(_('email address'), unique=True)
+
+    tipo = models.CharField(
+        max_length=1,
+        choices=TipoUtilizador.choices,
+        default=TipoUtilizador.CONSUMIDOR,
+        verbose_name=_('Tipo de Utilizador')
+    )
+    telefone = models.CharField(max_length=15, blank=True, null=True, verbose_name=_('Telefone'))
+    nif = models.CharField(max_length=9, blank=True, null=True, unique=True, verbose_name=_('NIF'))
+    morada = models.TextField(blank=True, null=True, verbose_name=_('Morada'))
+    codigo_postal = models.CharField(max_length=8, blank=True, null=True, verbose_name=_('Código Postal'))
+    localidade = models.CharField(max_length=100, blank=True, null=True, verbose_name=_('Localidade'))
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    objects = UtilizadorManager()
+
+    def __str__(self):
+        return f"{self.get_full_name()} ({self.email})"
+
+    class Meta:
+        verbose_name = _('Utilizador')
+        verbose_name_plural = _('Utilizadores')
+        ordering = ['-date_joined']
+
+
+# -------------------------
+# Categorias de produto
+# -------------------------
+
 class Categoria(models.Model):
-    nome = models.CharField(max_length=50)
-    icon = models.ImageField(upload_to='uploads/categorias/', blank=True, null=True)
+    nome = models.CharField(max_length=50, unique=True, verbose_name=_('Nome'))
+    descricao = models.TextField(blank=True, verbose_name=_('Descrição'))
+    icone = models.CharField(max_length=30, default='fa-leaf', verbose_name=_('Ícone'))
+    ordem_menu = models.PositiveSmallIntegerField(default=0, verbose_name=_('Ordem no Menu'))
 
     def __str__(self):
         return self.nome
 
-
-# === USUÁRIO PERSONALIZADO ===
-class User(AbstractBaseUser, PermissionsMixin):
-    primeiro_nome = models.CharField(max_length=50)
-    ultimo_nome = models.CharField(max_length=50)
-    telemovel = models.CharField(max_length=15, blank=True, null=True)
-    email = models.EmailField(unique=True)
-    perfil = models.CharField(
-        max_length=10,
-        choices=[('consumidor', 'Consumidor'), ('produtor', 'Produtor')],
-        default='consumidor'
-    )
-    localidade = models.CharField(max_length=100, blank=True, null=True)  # já existente
-    cidade = models.CharField(max_length=100, blank=True, null=True)      
-    descricao = models.TextField(blank=True, null=True)
-    foto_perfil = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
-    categorias_produzidas = models.ManyToManyField(Categoria, blank=True)
-
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
-    objects = UserManager()
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["primeiro_nome", "ultimo_nome", "telemovel"]
-
-    def __str__(self):
-        return f"{self.primeiro_nome} {self.ultimo_nome}"
+    class Meta:
+        verbose_name = _('Categoria')
+        verbose_name_plural = _('Categorias')
+        ordering = ['ordem_menu', 'nome']
 
 
-# === PRODUTO ===
+# -------------------------
+# Produtos
+# -------------------------
+
 class Produto(models.Model):
-    nome = models.CharField(max_length=100)
-    preco = models.DecimalField(max_digits=6, decimal_places=2)
-    quantidade = models.CharField(max_length=50)  # ex: "1kg", "caixa 5kg"
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    produtor = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'perfil': 'produtor'})
-    descricao = models.TextField(blank=True, null=True)
-    data_colheita = models.DateField(blank=True, null=True)
-    modo_producao = models.CharField(
-        max_length=20,
-        choices=[
-            ('convencional', 'Convencional'),
-            ('biologico', 'Biológico'),
-            ('hidroponico', 'Hidropónico'),
-        ],
-        default='convencional'
+    class UnidadeMedida(models.TextChoices):
+        KILO = 'kg', _('Quilograma')
+        GRAMA = 'g', _('Grama')
+        UNIDADE = 'un', _('Unidade')
+        LITRO = 'lt', _('Litro')
+        DUZIA = 'dz', _('Dúzia')
+
+    produtor = models.ForeignKey(
+        Utilizador,
+        on_delete=models.CASCADE,
+        limit_choices_to={'tipo': 'P'},
+        related_name='produtos',
+        verbose_name=_('Produtor')
     )
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.PROTECT,
+        related_name='produtos',
+        verbose_name=_('Categoria')
+    )
+    nome = models.CharField(max_length=100, verbose_name=_('Nome do Produto'))
+    slug = models.SlugField(unique=True, max_length=120, verbose_name=_('Slug do Produto'))
+    descricao = models.TextField(verbose_name=_('Descrição'))
+    preco = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0.01)],
+        verbose_name=_('Preço Unitário')
+    )
+    unidade = models.CharField(
+        max_length=2,
+        choices=UnidadeMedida.choices,
+        verbose_name=_('Unidade de Medida')
+    )
+    stock = models.PositiveIntegerField(default=0, verbose_name=_('Stock Disponível'))
+    imagem = models.ImageField(upload_to='produtos/', verbose_name=_('Imagem do Produto'))
+    data_colheita = models.DateField(verbose_name=_('Data de Colheita/Produção'))
+    certificado_biologico = models.BooleanField(default=False, verbose_name=_('Produto Biológico'))
+    disponivel = models.BooleanField(default=True, verbose_name=_('Disponível para Venda'))
+    destaque = models.BooleanField(default=False, verbose_name=_('Produto em Destaque'))
+    data_criacao = models.DateTimeField(auto_now_add=True, verbose_name=_('Data de Criação'))
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nome)
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.nome} - {self.quantidade}"
+        return f"{self.nome} - {self.produtor.get_short_name()}"
 
     class Meta:
-        ordering = ['nome']
+        verbose_name = _('Produto')
+        verbose_name_plural = _('Produtos')
+        ordering = ['-destaque', '-data_criacao']
+        indexes = [
+            models.Index(fields=['disponivel', 'destaque']),
+            models.Index(fields=['categoria', 'disponivel']),
+        ]
 
 
-# === IMAGENS DOS PRODUTOS ===
-class ImagemProduto(models.Model):
-    produto = models.ForeignKey(Produto, related_name="imagens", on_delete=models.CASCADE)
-    imagem = models.ImageField(upload_to=product_image_upload_path)
+# -------------------------
+# Encomendas
+# -------------------------
 
-    def __str__(self):
-        return f"Imagem de {self.produto.nome}"
+class Encomenda(models.Model):
+    class EstadoEncomenda(models.TextChoices):
+        PENDENTE = 'P', _('Pendente')
+        PROCESSAMENTO = 'R', _('Em Processamento')
+        ENVIADA = 'E', _('Enviada')
+        ENTREGUE = 'D', _('Entregue')
+        CANCELADA = 'C', _('Cancelada')
 
+    consumidor = models.ForeignKey(
+        Utilizador,
+        on_delete=models.PROTECT,
+        limit_choices_to={'tipo': 'C'},
+        related_name='encomendas',
+        verbose_name=_('Consumidor')
+    )
+    data = models.DateTimeField(auto_now_add=True, verbose_name=_('Data da Encomenda'))
+    estado = models.CharField(
+        max_length=1,
+        choices=EstadoEncomenda.choices,
+        default=EstadoEncomenda.PENDENTE,
+        verbose_name=_('Estado')
+    )
+    observacoes = models.TextField(blank=True, verbose_name=_('Observações'))
 
-# === CONTACTOS ===
-class MensagemDeContacto(models.Model):
-    nome = models.CharField(max_length=100)
-    email = models.EmailField()
-    mensagem = models.TextField()
-    data_envio = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Mensagem de {self.nome}"
+    def total(self):
+        return sum(item.subtotal() for item in self.itens.all())
 
     class Meta:
-        verbose_name = "Mensagem de Contacto"
-        verbose_name_plural = "Mensagens de Contacto"
-        ordering = ['-data_envio']
+        verbose_name = _('Encomenda')
+        verbose_name_plural = _('Encomendas')
+        ordering = ['-data']
+        permissions = [
+            ('mudar_estado_encomenda', 'Pode alterar estado da encomenda'),
+        ]
 
 
-class Pedido(models.Model):
-    consumidor = models.ForeignKey(User, on_delete=models.CASCADE)
-    criado_em = models.DateTimeField(auto_now_add=True)
+# -------------------------
+# Itens de Encomenda
+# -------------------------
 
-    def __str__(self):
-        return f"Pedido #{self.id} - {self.consumidor.email}"
-
-class ItemPedido(models.Model):
-    pedido = models.ForeignKey(Pedido, related_name='itens', on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
-    quantidade = models.PositiveIntegerField()
-    preco_unitario = models.DecimalField(max_digits=6, decimal_places=2)
+class ItemEncomenda(models.Model):
+    encomenda = models.ForeignKey(
+        Encomenda,
+        on_delete=models.CASCADE,
+        related_name='itens',
+        verbose_name=_('Encomenda')
+    )
+    produto = models.ForeignKey(
+        Produto,
+        on_delete=models.PROTECT,
+        verbose_name=_('Produto')
+    )
+    quantidade = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)],
+        verbose_name=_('Quantidade')
+    )
+    preco_unitario = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        verbose_name=_('Preço Unitário')
+    )
 
     def subtotal(self):
         return self.quantidade * self.preco_unitario
+
+    def __str__(self):
+        return f"{self.quantidade}x {self.produto.nome}"
+
+    class Meta:
+        verbose_name = _('Item de Encomenda')
+        verbose_name_plural = _('Itens de Encomenda')

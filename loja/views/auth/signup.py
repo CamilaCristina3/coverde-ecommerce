@@ -1,72 +1,84 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import make_password
-from loja.models import User
 from django.views import View
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
 
-class Signup(View):
+# Obtém o modelo de usuário personalizado
+User = get_user_model()
+
+class SignupConsumidorView(View):
+    template_name = 'pt/auth/signup_consumidor.html'
+    
     def get(self, request):
-        return render(request, 'signup.html')
-
+        return render(request, self.template_name)
+    
     def post(self, request):
-        postData = request.POST
-        primeiro_nome = postData.get('primeironome')
-        ultimo_nome = postData.get('ultimonome')
-        telemovel = postData.get('telemovel')
-        email = postData.get('email')
-        password = postData.get('password')
+        try:
+            user = User.objects.create_user(
+                email=request.POST.get('email'),
+                password=request.POST.get('password'),
+                first_name=request.POST.get('first_name'),
+                last_name=request.POST.get('last_name'),
+                tipo='C',  # Tipo Consumidor
+                telefone=request.POST.get('telefone'),
+                nif=request.POST.get('nif'),
+                morada=request.POST.get('morada'),
+                codigo_postal=request.POST.get('codigo_postal'),
+                localidade=request.POST.get('localidade')
+            )
+            messages.success(request, _('Registo efetuado com sucesso!'))
+            return redirect('loja:login')
+        
+        except Exception as e:
+            messages.error(request, _('Erro no registo: ') + str(e))
+            return render(request, self.template_name, {
+                'form_data': request.POST
+            })
 
-        # Preserve form values in case of an error
-        value = {
-            'primeiro_nome': primeiro_nome,
-            'ultimo_nome': ultimo_nome,
-            'telemovel': telemovel,
-            'email': email
-        }
+class SignupProdutorView(View):
+    template_name = 'pt/auth/signup_produtor.html'
+    
+    def get(self, request):
+        return render(request, self.template_name)
+    
+    def post(self, request):
+        try:
+            user = User.objects.create_user(
+                email=request.POST.get('email'),
+                password=request.POST.get('password'),
+                first_name=request.POST.get('first_name'),
+                last_name=request.POST.get('last_name'),
+                tipo='P',  # Tipo Produtor
+                telefone=request.POST.get('telefone'),
+                nif=request.POST.get('nif'),
+                morada=request.POST.get('morada'),
+                codigo_postal=request.POST.get('codigo_postal'),
+                localidade=request.POST.get('localidade')
+            )
+            messages.success(request, _('Registo de produtor efetuado com sucesso!'))
+            return redirect('loja:login')
+        
+        except Exception as e:
+            messages.error(request, _('Erro no registo: ') + str(e))
+            return render(request, self.template_name, {
+                'form_data': request.POST
+            })
 
-        # Instantiate user correctly
-        user = User(
-            primeiro_nome=primeiro_nome,
-            ultimo_nome=ultimo_nome,
-            telemovel=telemovel,
-            email=email,
-            password=password
-        )
-
-        # Validate user input
-        error_message = self.validateUser(user)
-
-        if not error_message:
-            user.password = make_password(user.password)  # Hash password
-            user.save()  # Save user to database
-            messages.success(request, "Registro concluído com sucesso! Faça login.")
-            return redirect('homepage')
-        else:
-            data = {
-                'error': error_message,
-                'values': value
-            }
-            return render(request, 'signup.html', data)
-
-    def validateUser(self, user):
-        error_message = None
-        if not user.primeiro_nome:
-            error_message = "Por favor, insira o seu primeiro nome!"
-        elif len(user.primeiro_nome) < 3:
-            error_message = "O primeiro nome deve ter pelo menos 3 caracteres."
-        elif not user.ultimo_nome:
-            error_message = "Por favor, insira o seu último nome!"
-        elif len(user.ultimo_nome) < 3:
-            error_message = "O último nome deve ter pelo menos 3 caracteres."
-        elif not user.telemovel:
-            error_message = "Por favor, insira o seu número de telemóvel!"
-        elif len(user.telemovel) < 9:
-            error_message = "O número de telemóvel deve ter 9 caracteres."
-        elif len(user.password) < 5:
-            error_message = "A senha deve ter pelo menos 5 caracteres."
-        elif len(user.email) < 5:
-            error_message = "O email deve ter pelo menos 5 caracteres."
-        elif User.objects.filter(email=user.email).exists():
-            error_message = "Este email já está registado!"
-
-        return error_message
+class SignupEmailVerificationView(View):
+    template_name = 'pt/auth/email_verification.html'
+    
+    def get(self, request):
+        return render(request, self.template_name)
+    
+    def post(self, request):
+        # Implementação da verificação de email
+        email = request.POST.get('email')
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request, _('Este email já está registado'))
+            return render(request, self.template_name)
+        
+        # Lógica para enviar código de verificação
+        messages.success(request, _('Código de verificação enviado para seu email'))
+        return redirect('loja:signup_continue')

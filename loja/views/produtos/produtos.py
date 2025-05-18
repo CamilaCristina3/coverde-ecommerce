@@ -1,23 +1,29 @@
-# loja/views/produtos/produtos.py
+from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from loja.models import Produto
 
-from django.shortcuts import render, get_object_or_404  # ← IMPORTAÇÃO CORRIGIDA
-from loja.models import Produto, Categoria
+class ListaProdutosView(ListView):
+    model = Produto
+    template_name = 'pt/shared/produtos/listagem.html'  # Mantido original
+    context_object_name = 'produtos'
+    paginate_by = 12
 
-def produto_detail(request, id):
-    produto = get_object_or_404(Produto, id=id)
-    return render(request, 'produtos/detalhe_produto.html', {'produto': produto})
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(disponivel=True)
+        categoria = self.request.GET.get('categoria')
+        if categoria:
+            queryset = queryset.filter(categoria__nome=categoria)
+        return queryset
 
-def lista_produtos(request):
-    categoria_id = request.GET.get('categoria')
-
-    if categoria_id:
-        produtos = Produto.objects.filter(categoria_id=categoria_id, produtor__is_active=True)
-    else:
-        produtos = Produto.objects.filter(produtor__is_active=True)
-
-    categorias = Categoria.objects.all()
-
-    return render(request, 'produtos/lista_produtos.html', {
-        'produtos': produtos,
-        'categorias': categorias
-    })
+class DetalheProdutoView(DetailView):
+    model = Produto
+    template_name = 'pt/shared/produto/detalhe.html'  # Corrigido aqui
+    context_object_name = 'produto'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Adicione produtos relacionados ao contexto
+        context['produtos_similares'] = Produto.objects.filter(
+            categoria=self.object.categoria
+        ).exclude(id=self.object.id)[:4]
+        return context

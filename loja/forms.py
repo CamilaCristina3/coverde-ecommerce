@@ -1,22 +1,27 @@
 from django import forms
-from loja.models import Product
-from decimal import Decimal
+from django.contrib.auth.forms import UserCreationForm
+from loja.models import Utilizador
 
-class ProductForm(forms.ModelForm):
-    preco = forms.CharField(label="Preço (€)", required=True)
-
+class ConsumidorForm(UserCreationForm):
     class Meta:
-        model = Product
-        fields = ["nome", "preco", "categoria", "descricao"]
+        model = Utilizador
+        fields = ['email', 'password1', 'password2']
+        labels = {
+            'username': 'Nome de utilizador',
+            'email': 'Email',
+            'password1': 'Palavra-passe',
+            'password2': 'Confirmar palavra-passe',
+        }
 
-    def clean_preco(self):
-        preco = self.cleaned_data["preco"].replace(",", ".")  # Converte vírgula para ponto
-        try:
-            preco = Decimal(preco)
-        except ValueError:
-            raise forms.ValidationError("Por favor, insira um valor numérico válido.")
-
-        if preco > Decimal("99999.99"):  # Bloqueia valores acima do limite do banco
-            raise forms.ValidationError("O preço não pode ser maior que 99999,99.")
-
-        return preco
+class ProdutorForm(UserCreationForm):
+    class Meta:
+        model = Utilizador
+        fields = [ 'email', 'nif', 'morada', 'password1', 'password2']
+        labels = {
+            'username': 'Nome de utilizador',
+            'email': 'Email',
+            'nif': 'NIF',
+            'morada': 'Morada de faturação',
+            'password1': 'Palavra-passe',
+            'password2': 'Confirmar palavra-passe',
+        }

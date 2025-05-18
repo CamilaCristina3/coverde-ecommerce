@@ -1,0 +1,20 @@
+{% extends "pt/shared/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ titulo_pagina }}</h1>
+    
+    <!-- Formulário ou configurações aqui -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <!-- Campos do formulário -->
+                <button type="submit" class="btn btn-success">
+                    {% trans "Salvar Configurações" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

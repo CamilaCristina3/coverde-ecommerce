@@ -1,34 +1,29 @@
-from django.shortcuts import render
-from django.views import View
-from loja.models import Produto, Categoria, produtos  # nomes corretos dos modelos
+from django.views.generic import ListView, DetailView
+from django.utils.translation import gettext_lazy as _
+from .models import Produto
 
-# Página inicial com produtos e categorias
-class Index(View):
-    def get(self, request):
-        categorias = Categoria.objects.all()
-        produtos = Produto.objects.all()
-        user = request.user
-        return render(request, "index.html", {
-            "categorias": categorias,
-            "produtos": produtos,
-            "user": user
-        })
+# loja/views/produtos/views.py
+class ProdutoListView(ListView):
+    model = Produto
+    template_name = 'pt/produtos/listagem.html'
+    context_object_name = 'produtos'
+    paginate_by = 12
 
-# Página da loja com filtro de categoria
-def loja(request):
-    categoria_id = request.GET.get('categoria')
-    categorias = Categoria.objects.all()
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(disponivel=True)
+        categoria = self.request.GET.get('categoria')
+        if categoria:
+            queryset = queryset.filter(categoria__nome=categoria)
+        return queryset
 
-    if categoria_id:
-        produtos = Produto.objects.filter(categoria_id=categoria_id)
-    else:
-        produtos = Produto.objects.all()
+class ProdutoDetailView(DetailView):
+    model = Produto
+    template_name = 'pt/produtos/detalhe.html'
+    context_object_name = 'produto'
 
-    return render(request, 'index.html', {
-        'produtos': produtos,
-        'categorias': categorias
-    })
-# views.py
-def lista_produtos(request):
-    # lógica para exibir os produtos
-    return render(request, 'produtos.html', {'produtos': produtos})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['produtos_relacionados'] = Produto.objects.filter(
+            categoria=self.object.categoria
+        ).exclude(id=self.object.id)[:4]
+        return context

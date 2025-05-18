@@ -38,13 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'loja',
+    'loja.apps.LojaConfig',  # ← VÍRGULA ADICIONADA
     'channels',
-    'chat',
-    
-    
+   'chat.apps.ChatConfig',
 ]
-AUTH_USER_MODEL = "loja.User"
+AUTH_USER_MODEL = 'loja.Utilizador'
 SESSION_ENGINE = "django.contrib.sessions.backends.db"  # Armazena sessões na BD
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_COOKIE_SECURE = False
@@ -131,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-pt'
 
 TIME_ZONE = 'UTC'
 

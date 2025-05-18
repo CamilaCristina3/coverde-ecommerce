@@ -1,89 +1,31 @@
-/* ✅ Reset e base */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    padding-top: 70px; /* espaço para o navbar fixo */
-    background-color: #EAF7F0;
+:root {
+    --verde-primario: #2a9d8f;
+    --amarelo-secundario: #e9c46a;
+    --laranja-destaque: #f4a261;
+    --branco-fundo: #f8f9fa;
 }
 
-/* ✅ Navbar fixa */
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background-color: #33691e;
-    color: white;
-    z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+.navbar-coverde {
+    background-color: var(--verde-primario) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* ✅ Itens da navbar (caso não use só Bootstrap) */
-.navbar ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: flex-start;
-    gap: 20px;
-}
-
-.navbar li a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-/* ✅ Botão de login no navbar */
-.login-button {
-    margin-left: auto;
-    background-color: #f5a623;
-    padding: 8px 12px;
-    border-radius: 5px;
-    color: white;
-    text-decoration: none;
-}
-
-/* ✅ Seção de destaque */
-.hero-section {
-    text-align: center;
-    background-color: #e8f5e9;
-    padding: 60px 20px;
-}
-
-/* ✅ Blocos para consumidor/produtor */
-.user-options {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 40px;
-}
-
-.option {
-    background-color: white;
-    border-radius: 10px;
-    padding: 30px;
-    width: 300px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-/* ✅ Botões principais (estilo laranja) */
-.main-button,
-.btn-orange {
-    display: inline-block;
-    background-color: #f5a623;
-    color: white !important;
-    padding: 12px 20px;
+.btn-coverde {
+    background-color: var(--amarelo-secundario);
     border: none;
-    border-radius: 30px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
 }
 
-.main-button:hover,
-.btn-orange:hover {
-    background-color: #e59400;
-    color: white !important;
+.card-produto {
+    transition: transform 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-produto:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.badge-biologico {
+    background-color: var(--verde-primario);
 }
