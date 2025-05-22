@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'dashboard',
+    'carrinho',
     'loja.apps.LojaConfig',  # ← VÍRGULA ADICIONADA
     'channels',
    'chat.apps.ChatConfig',
@@ -72,7 +74,10 @@ ROOT_URLCONF = 'projetoPDI.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),  # Diretório global de templates
+            os.path.join(BASE_DIR, 'loja/templates'),  # Diretório específico do app
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,12 +95,15 @@ WSGI_APPLICATION = 'projetoPDI.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-LOGIN_URL = "/login/"
+LOGIN_URL = 'loja:login'
+LOGIN_REDIRECT_URL = 'loja:index'
+AUTH_USER_MODEL = 'loja.Utilizador'
+
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'coverde',
+        'NAME': 'coverde_ecommerce',
         'USER': 'root',
         'PASSWORD': '0000',
         'HOST': 'localhost',

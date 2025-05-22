@@ -1,20 +1,33 @@
-{% extends "pt/shared/base.html" %}
+{% extends "pt/layouts/base.html" %}
+{% load i18n %}
+
+{% block title %}Configurações da Conta - Coverde{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>{{ titulo_pagina }}</h1>
-    
-    <!-- Formulário ou configurações aqui -->
-    <div class="card mt-4">
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                <!-- Campos do formulário -->
-                <button type="submit" class="btn btn-success">
-                    {% trans "Salvar Configurações" %}
-                </button>
-            </form>
+<div class="container py-5">
+    <h2 class="mb-4">{% trans "Editar Dados da Conta" %}</h2>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% for field in form %}
+        <div class="mb-3">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+                <div class="text-danger small">{{ field.errors }}</div>
+            {% endif %}
         </div>
-    </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success">
+            {% trans "Salvar Alterações" %}
+        </button>
+    </form>
 </div>
 {% endblock %}

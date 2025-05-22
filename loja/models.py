@@ -3,11 +3,29 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 from django.utils.text import slugify
+import os
+from uuid import uuid4
+
+def product_image_upload_path(instance, filename):
+    """
+    Gera um caminho único para armazenar imagens de produtos:
+    exemplo: produtos/abc123.jpg
+    """
+    ext = filename.split('.')[-1]
+    filename = f"{uuid4().hex}.{ext}"
+    return os.path.join('produtos', filename)
 
 
 # -------------------------
-# Gestão de utilizadores
+# Gestão de Utilizadores
 # -------------------------
+
+def user_directory_path(instance, filename):
+    """
+    Retorna o caminho para upload de imagens de perfil:
+    Ex: 'utilizadores/23/foto.jpg'
+    """
+    return f'utilizadores/{instance.id}/{filename}'
 
 class UtilizadorManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -23,7 +41,6 @@ class UtilizadorManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
-
 
 class Utilizador(AbstractUser):
     class TipoUtilizador(models.TextChoices):
@@ -61,17 +78,24 @@ class Utilizador(AbstractUser):
 
 
 # -------------------------
-# Categorias de produto
+# Categoria
 # -------------------------
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=50, unique=True, verbose_name=_('Nome'))
+    slug = models.SlugField(max_length=60, unique=True, verbose_name='Slug')
     descricao = models.TextField(blank=True, verbose_name=_('Descrição'))
     icone = models.CharField(max_length=30, default='fa-leaf', verbose_name=_('Ícone'))
     ordem_menu = models.PositiveSmallIntegerField(default=0, verbose_name=_('Ordem no Menu'))
 
     def __str__(self):
         return self.nome
+    
+    def save(self, *args, **kwargs):
+        from django.utils.text import slugify
+        if not self.slug:
+            self.slug = slugify(self.nome)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Categoria')
@@ -80,7 +104,7 @@ class Categoria(models.Model):
 
 
 # -------------------------
-# Produtos
+# Produto
 # -------------------------
 
 class Produto(models.Model):
@@ -128,7 +152,13 @@ class Produto(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.nome)
+            base_slug = slugify(self.nome)
+            slug = base_slug
+            i = 1
+            while Produto.objects.filter(slug=slug).exclude(id=self.id).exists():
+                slug = f"{base_slug}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -145,7 +175,7 @@ class Produto(models.Model):
 
 
 # -------------------------
-# Encomendas
+# Encomenda
 # -------------------------
 
 class Encomenda(models.Model):
@@ -185,7 +215,7 @@ class Encomenda(models.Model):
 
 
 # -------------------------
-# Itens de Encomenda
+# Item de Encomenda
 # -------------------------
 
 class ItemEncomenda(models.Model):
@@ -219,3 +249,57 @@ class ItemEncomenda(models.Model):
     class Meta:
         verbose_name = _('Item de Encomenda')
         verbose_name_plural = _('Itens de Encomenda')
+
+
+# -------------------------
+# Carrinho de Compras
+# -------------------------
+
+class Carrinho(models.Model):
+    utilizador = models.OneToOneField(
+        Utilizador,
+        on_delete=models.CASCADE,
+        related_name='carrinho',
+        verbose_name=_('Utilizador')
+    )
+    criado_em = models.DateTimeField(auto_now_add=True, verbose_name=_('Criado em'))
+
+    def total(self):
+        return sum(item.subtotal() for item in self.itens.all())
+
+    def __str__(self):
+        return f"Carrinho de {self.utilizador.get_full_name()}"
+
+    class Meta:
+        verbose_name = _('Carrinho')
+        verbose_name_plural = _('Carrinhos')
+
+
+class ItemCarrinho(models.Model):
+    carrinho = models.ForeignKey(
+        Carrinho,
+        on_delete=models.CASCADE,
+        related_name='itens',
+        verbose_name=_('Carrinho')
+    )
+    produto = models.ForeignKey(
+        Produto,
+        on_delete=models.CASCADE,
+        verbose_name=_('Produto')
+    )
+    quantidade = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)],
+        default=1,
+        verbose_name=_('Quantidade')
+    )
+
+    def subtotal(self):
+        return self.quantidade * self.produto.preco
+
+    def __str__(self):
+        return f"{self.quantidade}x {self.produto.nome}"
+
+    class Meta:
+        verbose_name = _('Item no Carrinho')
+        verbose_name_plural = _('Itens no Carrinho')
+        unique_together = ('carrinho', 'produto')

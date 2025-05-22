@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "pt/layouts/base.html" %}
 {% block title %}Carrinho - COVERDE{% endblock %}
 
 {% block content %}
@@ -35,7 +35,7 @@
     </table>
 
     <div class="text-end mt-3">
-      <a href="{% url 'finalizar_compra' %}" class="btn btn-success rounded-pill px-4">Finalizar Compra</a>
+      <a href="{% url 'loja:finalizar_compra' %}" class="btn btn-success rounded-pill px-4">Finalizar Compra</a>
     </div>
   {% else %}
     <div class="alert alert-info">O teu carrinho está vazio.</div>

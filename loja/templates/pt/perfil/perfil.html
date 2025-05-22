@@ -1,0 +1,28 @@
+{% extends "pt/layouts/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Perfil do Utilizador" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">{% trans "Meu Perfil" %}</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Nome:</strong> {{ user.get_full_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Telefone:</strong> {{ user.telefone }}</p>
+            <p><strong>Morada:</strong> {{ user.morada }}</p>
+            <p><strong>Localidade:</strong> {{ user.localidade }}</p>
+            <p><strong>Código Postal:</strong> {{ user.codigo_postal }}</p>
+            <p><strong>Tipo de Utilizador:</strong> 
+                {% if user.tipo == 'P' %} Produtor {% else %} Consumidor {% endif %}
+            </p>
+
+            <a href="{% url 'loja:configuracoes_conta' %}" class="btn btn-outline-success mt-3">
+                {% trans "Editar Dados" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

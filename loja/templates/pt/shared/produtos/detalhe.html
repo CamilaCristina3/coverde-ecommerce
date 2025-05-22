@@ -1,6 +1,5 @@
-{% extends "pt/shared/base.html" %}
-{% load static %}
-
+{% extends "pt/layouts/base.html" %}
+{% block title %}Página Inicial{% endblock %}
 {% block content %}
 <div class="container my-5">
     <div class="row">
@@ -13,7 +12,7 @@
             <p>{{ produto.descricao }}</p>
             
             <!-- Formulário de compra -->
-            <form method="post" action="{% url 'adicionar_carrinho' produto.id %}">
+            <form method="post" action="{% url 'loja:adicionar_carrinho' produto.id %}">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-success">
                     Adicionar ao Carrinho

@@ -1,0 +1,97 @@
+{% extends "pt/layouts/base.html" %}
+{% load static %}
+{% block title %}Produtos - Coverde{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="mb-3 mb-md-0">Os Nossos Produtos</h2>
+
+        <!-- Filtro e ordenação -->
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <input type="text" name="categoria" class="form-control" placeholder="Categoria"
+                       value="{{ request.GET.categoria }}">
+            </div>
+            <div class="col-md-3">
+                <select name="ordenar" class="form-select">
+                    <option value="">Ordenar por...</option>
+                    <option value="preco" {% if request.GET.ordenar == "preco" %}selected{% endif %}>Preço: Menor → Maior</option>
+                    <option value="-preco" {% if request.GET.ordenar == "-preco" %}selected{% endif %}>Preço: Maior → Menor</option>
+                </select>
+            </div>
+            <div class="col-md-3 form-check ms-2">
+                <input class="form-check-input" type="checkbox" name="disponivel" value="1"
+                       {% if request.GET.disponivel == "1" %}checked{% endif %}>
+                <label class="form-check-label">Apenas disponíveis</label>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">Aplicar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Produtos -->
+    <div class="row">
+        {% for produto in produtos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm position-relative">
+
+                {% if produto.destaque %}
+                <span class="position-absolute top-0 start-0 bg-warning text-dark px-2 py-1 small z-3">Destaque</span>
+                {% endif %}
+
+                {% if produto.imagem %}
+                <img src="{{ produto.imagem.url }}" class="card-img-top" alt="{{ produto.nome }}"
+                     style="height: 200px; object-fit: cover;">
+                {% else %}
+                <img src="{% static 'imgs/placeholder.jpg' %}" class="card-img-top" alt="Sem imagem"
+                     style="height: 200px; object-fit: cover;">
+                {% endif %}
+
+                <div class="card-body d-flex flex-column">
+                    <span class="badge bg-success mb-2">{{ produto.categoria.nome }}</span>
+                    <h5 class="card-title">{{ produto.nome }}</h5>
+                    <p class="card-text text-muted">{{ produto.descricao|truncatechars:100 }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="h5 text-success mb-0">{{ produto.preco }} €</span>
+                        <a href="{% url 'loja:detalhe_produto' produto.slug %}" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-eye"></i> Ver Detalhes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">Nenhum produto disponível neste momento.</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginação -->
+    {% if is_paginated %}
+    <nav aria-label="Navegação de páginas" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">&laquo;</a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&{{ request.GET.urlencode }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">&raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

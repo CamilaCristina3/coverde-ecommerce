@@ -1,227 +1,79 @@
+{% extends "pt/layouts/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'imgs/favicon.svg' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/fonts/customfonts.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jomhuria&display=swap" rel="stylesheet">
-</head>
-<body style="background-color: #EAEAEA;">
-    {% include 'navbar.html' %}
 
-<div class="container mt-5">
+{% block title %}Chat{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
     <div class="row">
-        <!-- Coluna Esquerda - Lista de Conversas -->
+        <!-- Lista de Conversas -->
         <div class="col-md-4">
-            <div class="card p-4 shadow">
-                <h2 class="jomhuria-regular fs-custom">Conversas</h2>
+            <div class="card shadow p-3">
+                <h4 class="jomhuria-regular fs-custom">Conversas</h4>
                 <ul class="list-group">
                     {% for conversation in conversations %}
-                        {% with conversation.user2 as other_user %}
-                            {% if conversation.user1 == user %}
-                                {% with conversation.user2 as other_user %}
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-2">
-                                            <img src="{% if other_user.profile_picture %}{{ other_user.profile_picture.url }}{% else %}{% static 'imgs/icons/account_circle.svg' %}{% endif %}" 
-                                            style="width: 40px; height: 40px; border-radius: 50%;" 
-                                            alt="Foto de perfil">                                        </div>
-                                        <div class="col mt-2">
-                                            <a class="jomhuria-regular fs-2" href="{% url 'chat_detail' conversation.id %}" style="text-decoration: none; line-height: 0; color: black;">
-                                                {{ other_user.primeiro_nome }} {{ other_user.ultimo_nome }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </li>
-                                {% endwith %}
-                            {% else %}
-                                {% with conversation.user1 as other_user %}
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-2">
-                                            <img  src="{% if other_user.profile_picture %}{{ other_user.profile_picture.url }}{% else %}{% static 'imgs/icons/account_circle.svg' %}{% endif %}" style="width: 40px; height: 40px; border-radius: 50%;" alt="">
-                                        </div>
-                                        <div class="col mt-2">
-                                            <a class="jomhuria-regular fs-2" href="{% url 'chat_detail' conversation.id %}" style="text-decoration: none; line-height: 0; color: black;">
-                                                {{ other_user.primeiro_nome }} {{ other_user.ultimo_nome }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </li> 
-                                {% endwith %}
-                            {% endif %}
+                        {% with other_user=conversation.user2 if conversation.user1 == user else conversation.user1 %}
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <img src="{% if other_user.profile_picture %}{{ other_user.profile_picture.url }}{% else %}{% static 'imgs/icons/account_circle.svg' %}{% endif %}" 
+                                     alt="Foto de perfil" class="rounded-circle" width="40" height="40">
+                                <a href="{% url 'chat_detail' conversation.id %}" class="ms-3 text-decoration-none text-dark fw-bold">
+                                    {{ other_user.primeiro_nome }} {{ other_user.ultimo_nome }}
+                                </a>
+                            </div>
+                        </li>
                         {% endwith %}
                     {% empty %}
-                        <li class="list-group-item">Sem conversas ativas</li>
+                        <li class="list-group-item text-muted">Nenhuma conversa ativa</li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
 
-        <!-- Coluna Direita - Chat -->
+        <!-- Chat ativo -->
         <div class="col-md-8">
-            <div class="card p-4 shadow" style="height: 600px;">
+            <div class="card shadow p-4" style="height: 600px;">
                 {% if active_conversation %}
-                    <h2 class="jomhuria-regular fs-custom">
-                        Conversa com 
-                        {% if active_conversation.user1 == user %}
-                            {% with active_conversation.user2 as other_user %}
+                    <h4 class="mb-4">Conversa com 
+                        {% with other_user=active_conversation.user2 if active_conversation.user1 == user else active_conversation.user1 %}
                             {{ other_user.primeiro_nome }}
-                            {% endwith %}
-                        {% else %}
-                            {% with active_conversation.user1 as other_user %}
-                            {{ other_user.primeiro_nome }}
-                            {% endwith %}
-                        {% endif %}
-                    </h2>
-                    <!--
-                    <ul id="messagesList" style="overflow-y: scroll;" class="list-group mb-3">
+                        {% endwith %}
+                    </h4>
+
+                    <!-- Mensagens -->
+                    <div id="messagesList" class="overflow-auto mb-3" style="max-height: 400px;">
                         {% for message in messages %}
-                            <li class="list-group-item">
-                                {% if message.sender.primeiro_nome != user.primeiro_nome %}
-                                <strong>{{ message.sender.primeiro_nome }}:</strong> {{ message.text }}
-                                {% else %}
-                                <strong>{{ message.sender.primeiro_nome }}: </strong> {{ message.text }}
-                                {% endif %}
-                                
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item">Nenhuma mensagem ainda.</li>
+                            <div class="d-flex mb-2 {% if message.sender == user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                                <div class="p-2 rounded {% if message.sender == user %}bg-success text-white{% else %}bg-light{% endif %}">
+                                    <p class="mb-1">{{ message.text }}</p>
+                                    <small class="text-muted">{{ message.timestamp|date:"H:i" }}</small>
+                                </div>
+                            </div>
                         {% endfor %}
-                        -->
-                        <div style="overflow-y: scroll;" id="messagesList" class="mb-3">
-                            {% for message in messages %}
-                            {% if message.sender.primeiro_nome != user.primeiro_nome %}
-                            <div style="display: flex; justify-content: flex-start; height: auto; margin-bottom: 5px;">
-                                <div class="border rounded-3 p-2" style="background-color: rgb(240, 240, 240);">
-                                    <p class="jomhuria-regular fs-2 ms-2" style="line-height: 1; margin-bottom: 0;">{{ message.text }}</p>
-                                    <span style="font-size: 0.8em; color: #777; margin-left: 5px;">
-                                        {{ message.timestamp|date:"H:i" }} {# Format: HH:MM #}
-                                    </span>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div style="display: flex; justify-content: flex-end; height: auto; margin-bottom: 5px;">
-                                <div class="border rounded-3 p-2" style="background-color:aliceblue ">
-                                    <p class="jomhuria-regular fs-2 ms-2" style="line-height: 1; margin-bottom: 0; display: flex; justify-content: flex-start;">{{ message.text }}</p>
-                                    <span style="font-size: 0.8em; color: #777; margin-left: 5px;">
-                                        {{ message.timestamp|date:"H:i" }} {# Format: HH:MM #}
-                                    </span>
-                                </div>
-                            </div>
+                    </div>
 
-                            
-                            {% endif %}
-                            {% endfor %}
-                        </div>
-
-                        
-                    <!-- Formulário de envio -->
+                    <!-- Enviar mensagem -->
                     <form method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="conversation_id" value="{{ active_conversation.id }}">
                         <div class="input-group">
-                            <input name="message" id="messageInput" class="form-control" placeholder="Escreve uma mensagem..."></input>
-                            <button type="submit" class="btn btn-primary">Enviar</button>
+                            <input type="text" name="message" id="messageInput" class="form-control" placeholder="Escreve uma mensagem...">
+                            <button class="btn btn-success" type="submit">Enviar</button>
                         </div>
                     </form>
                 {% else %}
-                    <h2 class="jomhuria-regular fs-custom">Conversa</h2>
-                    <p>Selecione um chat à esquerda para começar uma conversa.</p>
+                    <p class="text-muted">Seleciona uma conversa para começar.</p>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
-      
-<script>
-    {% if active_conversation %}
-        const username = "{{ user.primeiro_nome }}"; // Current user's name
-        const conversationId = "{{ active_conversation.id }}";
-        const messagesList = document.querySelector("#messagesList"); // Get the messages container
-
-        // Function to scroll to the bottom of the chat
-        function scrollToBottom() {
-            messagesList.scrollTop = messagesList.scrollHeight;
-        }
-
-        // Initial scroll to bottom when page loads
-        scrollToBottom();
-
-        const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + conversationId + "/");
-
-        chatSocket.onopen = function(e) {
-            console.log("WebSocket connection established");
-        };
-
-        chatSocket.onerror = function(e) {
-            console.error("WebSocket error:", e);
-        };
-
-        chatSocket.onclose = function(e) {
-            console.log("WebSocket connection closed", e.code, e.reason);
-        };
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            let messageHTML = '';
-            // *** Get the formatted time from the data ***
-            let timestampHTML = `<span class="message-timestamp" style="font-size: 0.8em; color: #777; margin-left: 5px;">${data.time}</span>`;
-
-            // Check if the message sender is the current user
-            if (data.username === username) { // Or better: if (data.user_id === currentUserId)
-                 // Right alignment for own messages
-                 timestampHTML = `<span class="message-timestamp-own" style="font-size: 0.8em; color: #eee; margin-left: 5px;">${data.time}</span>`;
-                 messageHTML = `
-                 <div style="display: flex; justify-content: flex-end; height: auto; margin-bottom: 5px;">
-                     <div class="border rounded-4 bg-primary text-white p-2" style="background-color:aliceblue ">
-                         <p class="jomhuria-regular fs-2 ms-2" style="line-height: 1; margin-bottom: 0;">
-                             ${data.message}${timestampHTML} {# Append timestamp #}
-                         </p>
-                     </div>
-                 </div>`;
-            } else {
-                 // Left alignment for other user's messages
-                 messageHTML = `
-                 <div class="mb-1">
-                      <p class="jomhuria-regular fs-2 list-group-item" style="line-height: 1; margin-bottom: 0;">
-                          ${data.message}${timestampHTML} {# Append timestamp #}
-                      </p>
-                 </div>`;
-            }
-
-            // Append the correctly styled message HTML
-            messagesList.innerHTML += messageHTML;
-
-            // Scroll to the bottom after adding the new message
-            scrollToBottom();
-        };
-
-        document.querySelector("form").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const messageInput = document.querySelector("#messageInput");
-            const message = messageInput.value.trim();
-
-            if (message) {
-                chatSocket.send(JSON.stringify({
-                    "message": message
-                }));
-
-                messageInput.value = "";
-            }
-        });
-    {% endif %}
-</script>
-
-    
-
-</body>
-</html>
+{% block extra_js %}
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}

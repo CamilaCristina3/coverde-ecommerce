@@ -1,8 +1,8 @@
 # loja/views/produtos/__init__.py
 
-from .listagem import ProdutoListView, CategoriaListagemView
-from .detalhe import ProdutoDetalheView
-from .gestao import ProdutoCriarView, ProdutoEditarView
+from loja.views.lista_produtos import ProdutoListView, CategoriaListagemView
+from loja.views.produtos.detalhe import ProdutoDetalheView
+from loja.views.produtos.gestao import ProdutoCriarView, ProdutoEditarView
 
 __all__ = [
     'ProdutoListView',

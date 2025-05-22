@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 class IndexView(TemplateView):
     """View para a página inicial"""
-    template_name = 'pt/home/index.html'
+    template_name = 'pt/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -13,4 +13,4 @@ class IndexView(TemplateView):
 
 class LojaView(TemplateView):
     """View para a página da loja"""
-    template_name = 'pt/home/loja.html'
+    template_name = 'pt/loja.html'

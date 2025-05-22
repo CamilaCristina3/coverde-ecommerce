@@ -1,0 +1,30 @@
+{% extends "pt/layouts/base.html" %}
+{% block title %}Painel do Produtor - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Os Meus Produtos</h2>
+
+    {% if produtos %}
+        <div class="row">
+            {% for produto in produtos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if produto.imagem %}
+                            <img src="{{ produto.imagem.url }}" class="card-img-top" alt="{{ produto.nome }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ produto.nome }}</h5>
+                            <p class="card-text text-muted">{{ produto.preco }} €</p>
+                            <p class="card-text small">{{ produto.descricao|truncatewords:15 }}</p>
+                            <a href="{% url 'loja:editar_produto' produto.slug %}" class="btn btn-outline-primary btn-sm">Editar</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">Ainda não tem produtos publicados.</div>
+    {% endif %}
+</div>
+{% endblock %}

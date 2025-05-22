@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "pt/layouts/base.html" %}
 {% block title %}Pedido Concluído - COVERDE{% endblock %}
 
 {% block content %}
@@ -7,7 +7,7 @@
     <h2 class="text-success fw-bold mb-4">🎉 Compra Finalizada</h2>
     <p class="lead">Obrigado por apoiar os produtores locais.</p>
     <p class="text-muted">Pedido nº <strong>{{ pedido.id }}</strong> feito em {{ pedido.criado_em|date:"d/m/Y H:i" }}.</p>
-    <a href="{% url 'produtos' %}" class="btn btn-outline-success mt-4">Voltar à Loja</a>
+    <a href="{% url 'loja:produtos' %}" class="btn btn-outline-success mt-4">Voltar à Loja</a>
   </div>
 </div>
 {% endblock %}

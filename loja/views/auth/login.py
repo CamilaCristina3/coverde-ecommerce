@@ -1,28 +1,14 @@
-from django.views import View
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.views import LoginView as DjangoLoginView
+from django.urls import reverse_lazy
+from loja.models import Utilizador
 
-class LoginView(View):  # ← Aqui está a definição da classe que você quer importar
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('loja:index')
-        return render(request, 'pt/auth/login.html')
+class LoginView(DjangoLoginView):
+    template_name = 'pt/auth/login.html'
+    redirect_authenticated_user = True
 
-    def post(self, request):
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        
-        user = authenticate(request, email=email, password=password)
-        
-        if user is not None:
-            login(request, user)
-            messages.success(request, _('Login efetuado com sucesso!'))
-            
-            if user.tipo == 'P':  # Produtor
-                return redirect('loja:dashboard')
-            return redirect('loja:index')
-        
-        messages.error(request, _('Credenciais inválidas'))
-        return render(request, 'pt/auth/login.html')
+    def get_success_url(self):
+        user = self.request.user
+        if user.tipo == Utilizador.TipoUtilizador.PRODUTOR:
+            return reverse_lazy('loja:dashboard')
+        return reverse_lazy('loja:produtos')
+
