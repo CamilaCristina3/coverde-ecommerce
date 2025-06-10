@@ -1,0 +1,298 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="COVERDE - Plataforma de agricultura sustentável conectando produtores e consumidores">
+    <title>{% block title %}COVERDE | Agricultura Sustentável{% endblock %}</title>
+    
+    <!-- Favicon com fallback -->
+    <link rel="icon" href="{% static 'css/images/favicon.svg' %}" type="image/svg+xml">
+    <link rel="alternate icon" href="{% static 'css/images/favicon.png' %}" type="image/png">
+    
+    <!-- CSS com verificação de integridade -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" id="main-css">
+    <script>
+    document.getElementById('main-css').onerror = function() {
+        this.href = "{% static 'css/fallback.css' %}";
+    };
+    </script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-light">
+
+<!-- Navbar Acessível -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top shadow" aria-label="Navegação principal">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'ecommerce_coverde:index' %}" aria-label="Página inicial da COVERDE">
+            <img src="{% static 'css/images/logo.png' %}" alt="Logo COVERDE" height="40">
+        </a>
+        
+        <!-- Botão de pesquisa acessível -->
+        <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" 
+                data-bs-target="#searchMobile" aria-label="Abrir busca" aria-expanded="false">
+            <i class="fas fa-search text-white" aria-hidden="true"></i>
+        </button>
+        
+        <!-- Menu principal -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                data-bs-target="#navbarMain" aria-controls="navbarMain" 
+                aria-expanded="false" aria-label="Alternar navegação">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ecommerce_coverde:sobre' %}" aria-current="page">Sobre Nós</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="solucoesDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Soluções
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="solucoesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:solucoes' %}?tipo=produtores">Para Produtores</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:solucoes' %}?tipo=consumidores">Para Consumidores</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="produtosDropdown" role="button" 
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Produtos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="produtosDropdown">
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:listagem-produto' %}">Todos Produtos</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% for categoria in categorias %}
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:produto-por-categoria' categoria.slug %}">{{ categoria.nome }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ecommerce_coverde:contacto' %}">Contato</a>
+                </li>
+            </ul>
+            
+            <div class="d-flex ms-3">
+                {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="userDropdown" 
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-1"></i> Minha Conta
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:perfil' %}">Perfil</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:pedido-list' %}">Meus Pedidos</a></li>
+                       <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:favoritos' %}">Favoritos</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:logout' %}">Sair</a></li>
+                    </ul>
+                </div>
+                <a href="{% url 'ecommerce_coverde:carrinho' %}" class="btn btn-outline-light ms-2 position-relative">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ request.session.carrinho|length|default:"0" }}
+                    </span>
+                </a>
+                {% else %}
+                <a href="{% url 'ecommerce_coverde:registration_choice' %}" class="btn btn-light me-2" aria-label="Registrar nova conta">
+                    <i class="fas fa-user-plus me-1" aria-hidden="true"></i> Registrar
+                </a>
+                <a href="{% url 'ecommerce_coverde:login' %}" class="btn btn-outline-light" aria-label="Fazer login">
+                    <i class="fas fa-sign-in-alt me-1" aria-hidden="true"></i> Entrar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Sistema de Mensagens -->
+<div class="container mt-5 pt-5">
+    {% if messages %}
+    <div class="row">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Conteúdo Principal -->
+<main class="container mt-5 pt-4" id="main-content" tabindex="-1">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- Rodapé Acessível -->
+<footer class="bg-dark text-white py-5 mt-5" aria-label="Rodapé">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <h2 class="h5 fw-bold mb-3">COVERDE</h2>
+                <p class="text-white-50">Conectando produtores rurais a consumidores conscientes.</p>
+                <div class="social-icons mt-3">
+                    <a href="#" class="text-white me-3" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                    <a href="#" class="text-white me-3" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                    <a href="#" class="text-white" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <h2 class="h5 fw-bold mb-3">Links Úteis</h2>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a href="{% url 'ecommerce_coverde:sobre' %}" class="text-white-50 text-decoration-none hover-white">
+                            <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> Sobre Nós
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'ecommerce_coverde:termos_condicoes' %}" class="text-white-50 text-decoration-none hover-white">
+                            <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> Termos de Serviço
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'ecommerce_coverde:politica_privacidade' %}" class="text-white-50 text-decoration-none hover-white">
+                            <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> Política de Privacidade
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="{% url 'ecommerce_coverde:faq' %}" class="text-white-50 text-decoration-none hover-white">
+                            <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> FAQ
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-4">
+                <h2 class="h5 fw-bold mb-3">Contato</h2>
+                <address class="text-white-50">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <i class="fas fa-envelope me-2 text-muted" aria-hidden="true"></i>
+                            <a href="mailto:contato@coverde.com.br" class="text-white-50">contato@coverde.pt</a>
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-phone me-2 text-muted" aria-hidden="true"></i>
+                            <a href="tel:+351987654321" class="text-white-50">+351 987 654 321</a>
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-map-marker-alt me-2 text-muted" aria-hidden="true"></i>
+                            Coimbra, Portugal
+                        </li>
+                    </ul>
+                </address>
+            </div>
+        </div>
+        
+        <hr class="my-4 bg-secondary">
+        
+        <div class="text-center">
+            <p class="mb-0 text-white-50 small">
+                &copy; 2023 COVERDE. Todos os direitos reservados.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- Tentativa principal via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Fallback local -->
+<script>
+    if (typeof bootstrap === 'undefined') {
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = "{% static 'js/bootstrap.bundle.min.js' %}";
+        document.head.appendChild(fallbackScript);
+    }
+</script>
+
+<!-- Sistema de Favoritos -->
+<script>
+function adicionarFavorito(produtoId) {
+    fetch(`/favoritos/adicionar/${produtoId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            // Sucesso, atualize a interface se necessário
+            console.log('Produto adicionado aos favoritos!');
+        } else {
+            console.error('Erro ao adicionar favorito.');
+        }
+    })
+    .catch(error => {
+        console.error('Erro na requisição:', error);
+    });
+}
+
+
+function showToast(message, type) {
+    const toastContainer = document.getElementById('toast-container');
+    const toastEl = document.createElement('div');
+    toastEl.className = `toast show align-items-center text-white bg-${type} border-0`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    toastEl.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar notificação"></button>
+        </div>
+    `;
+    toastContainer.appendChild(toastEl);
+    
+    // Remove automaticamente após 5 segundos
+    setTimeout(() => {
+        toastEl.remove();
+    }, 5000);
+}
+</script>
+
+<!-- Sistema de Notificações -->
+{% if user.is_authenticated %}
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
+
+<script>
+const notificationSocket = new WebSocket(
+    'ws://' + window.location.host + '/ws/notificacoes/'
+);
+
+notificationSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    showToast(data.message, data.type || "info");
+};
+
+notificationSocket.onclose = function(e) {
+    if (e.wasClean) {
+        console.log('Conexão de notificação fechada limpa');
+    } else {
+        console.error('Notificação socket fechada inesperadamente');
+    }
+};
+
+notificationSocket.onerror = function(error) {
+    console.error('Erro na conexão de notificação:', error);
+};
+</script>
+{% endif %}
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

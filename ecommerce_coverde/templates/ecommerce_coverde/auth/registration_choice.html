@@ -1,0 +1,32 @@
+{% extends "shared/base.html" %}
+{% block title %}Escolha de Cadastro - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="border p-4 bg-white rounded text-center">
+                <h1 class="mb-4">Cadastre-se</h1>
+                <p class="text-muted mb-4">Selecione o tipo de conta:</p>
+                
+                <div class="d-grid gap-3">
+                    <a href="{% url 'ecommerce_coverde:signup_produtor' %}" 
+                       class="btn btn-outline-success btn-lg">
+                        Sou Produtor
+                    </a>
+                    <a href="{% url 'ecommerce_coverde:signup_consumidor' %}" 
+                       class="btn btn-outline-primary btn-lg">
+                        Sou Consumidor
+                    </a>
+                </div>
+
+                <div class="mt-4">
+                    <small>
+                        Já tem uma conta? <a href="{% url 'ecommerce_coverde:login' %}">Faça login</a>.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

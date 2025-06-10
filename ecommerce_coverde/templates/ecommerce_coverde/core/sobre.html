@@ -1,0 +1,41 @@
+{% extends "shared/base.html" %}
+{% load custom_tags %} 
+{% load static %}
+
+{% block title %}Sobre Nós - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="display-4 mb-4">Sobre a COVERDE</h1>
+            
+            <div class="mb-5">
+                <h2 class="h3 text-success">Nossa Missão</h2>
+                <p>Promover a soberania alimentar através do comércio eletrônico justo, conectando produtores locais a consumidores conscientes.</p>
+            </div>
+            
+            <div class="mb-5">
+                <h2 class="h3 text-success">História</h2>
+                <p>Fundada em 2023, a COVERDE nasceu da necessidade de criar pontes entre a produção agrícola sustentável e o consumo responsável.</p>
+            </div>
+            
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="h4 text-success"><i class="fas fa-bullseye me-2"></i>Valores</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Sustentabilidade ambiental</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Comércio justo</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Valorização do trabalho rural</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Transparência nas relações</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{% url 'ecommerce_coverde:contacto' %}" class="btn btn-success px-4">Fale Conosco</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

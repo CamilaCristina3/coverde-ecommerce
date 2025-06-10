@@ -1,0 +1,39 @@
+{% extends "shared/base.html" %}
+{% load custom_tags %} 
+{% load static %}
+
+{% block title %}Registro de Produtor - COVERDE{% endblock %}
+
+{% block content %}
+<!-- Exemplo para registration_form.html -->
+<div class="container my-5">
+  <div class="row justify-content-center">
+      <div class="col-md-6">
+          <div class="border p-4 bg-white rounded">
+              <h1 class="text-center mb-4">Bem-vindo/a</h1>
+              <p class="text-muted text-center mb-4">Insira os seus dados de segurança.</p>
+              
+              <!-- Seletor de Tipo -->
+              <div class="d-flex justify-content-center mb-4">
+                  <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-outline-success active">Produtor</button>
+                      <button type="button" class="btn btn-outline-secondary">Consumidor</button>
+                  </div>
+              </div>
+              
+              {% include "ecommerce_coverde/auth/login.html" %}
+              
+              <div class="text-center mt-3">
+                  <a href="{% url 'ecommerce_coverde:login' %}" class="text-decoration-none">
+                      <i class="fas fa-arrow-left me-2"></i>Voltar
+                  </a>
+              </div>
+          </div>
+          
+          <div class="text-center mt-3 text-muted small">
+              <p>© 2025 Ecommerce-Coverde. Todos os direitos reservados.</p>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "shared/base.html" %}
+
+{% load custom_tags %} 
+
+
+{% load static cache %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Filtros e Busca -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get" class="search-form">
+                <div class="input-group">
+                    <input type="text" name="query" class="form-control" 
+                           placeholder="Buscar produtos..." value="{{ request.GET.query }}">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" onchange="location = this.value;">
+                <option value="?ordenacao=-destaque" {% if request.GET.ordenacao == '-destaque' %}selected{% endif %}>
+                    Destaques
+                </option>
+                <option value="?ordenacao=-avaliacao_media" {% if request.GET.ordenacao == '-avaliacao_media' %}selected{% endif %}>
+                    Melhores Avaliados
+                </option>
+                <option value="?ordenacao=preco" {% if request.GET.ordenacao == 'preco' %}selected{% endif %}>
+                    Preço: Menor → Maior
+                </option>
+                <option value="?ordenacao=-preco" {% if request.GET.ordenacao == '-preco' %}selected{% endif %}>
+                    Preço: Maior → Menor
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Listagem de Produtos -->
+    <div class="row">
+        {% for produto in produtos %}
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+            <div class="card h-100 produto-card">
+              <a href="{% url 'ecommerce_coverde:detalhe-produto' produto.slug %}" class="produto-link">
+                {{ produto.nome }}
+            </a>
+                    <img src="{{ produto.imagem_principal.url }}" 
+                         class="card-img-top" 
+                         alt="{{ produto.nome }}"
+                         loading="lazy">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title">
+                      <a href="{% url 'detalhe-produto' produto.slug %}" class="produto-link">
+                        {{ produto.nome }}
+                    </a>
+                    </h5>
+                    <p class="text-muted small">{{ produto.categoria.nome }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-success">€ {{ produto.preco }}</span>
+                        {% if user.is_authenticated %}
+                        <button class="btn btn-sm btn-outline-danger favorito-btn" 
+                                data-produto-id="{{ produto.id }}">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h4>Nenhum produto encontrado</h4>
+            <a href="{% url 'ecommerce_coverde:produto-listagem' %}" class="btn btn-success">
+                Ver todos os produtos
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginação -->
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Favoritos com AJAX
+document.querySelectorAll('.favorito-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const produtoId = this.dataset.produtoId;
+        fetch(`/produtos/${produtoId}/favorito/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'added') {
+                this.innerHTML = '<i class="fas fa-heart"></i>';
+                this.classList.add('text-danger');
+            } else {
+                this.innerHTML = '<i class="far fa-heart"></i>';
+                this.classList.remove('text-danger');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

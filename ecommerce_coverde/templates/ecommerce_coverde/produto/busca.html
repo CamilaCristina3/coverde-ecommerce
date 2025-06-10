@@ -1,0 +1,174 @@
+{% extends 'shared/base.html' %}
+{% load custom_tags %} 
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Cabeçalho e Barra de Busca -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-3">Resultados da Busca</h1>
+            <form method="get" action="{% url 'ecorce_coverde:produto-busca' %}" class="search-form bg-light p-3 rounded">
+                <div class="input-group">
+                    <input type="text" 
+                           name="query" 
+                           class="form-control form-control-lg" 
+                           placeholder="O que você está procurando?" 
+                           value="{{ query }}"
+                           aria-label="Buscar produtos">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-search me-1"></i> Buscar
+                    </button>
+                </div>
+            </form>
+            
+            <p class="text-muted mt-2">
+                {% if produtos %}
+                    Encontramos {{ produtos.paginator.count }} resultado(s) para "{{ query }}"
+                {% else %}
+                    Nenhum resultado encontrado para "{{ query }}"
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="row">
+        {% if produtos %}
+            {% for produto in produtos %}
+            <div class="col-6 col-md-4 col-lg-3 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <!-- Imagem com lazy loading -->
+                    <a href="{% url 'ecommerce_coverde:detalhe-produto' produto.slug %}">
+                        <img src="{{ produto.imagem.url }}" 
+                             class="card-img-top" 
+                             alt="{{ produto.nome }}"
+                             loading="lazy"
+                             style="height: 180px; object-fit: cover;">
+                    </a>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'ecommerce_coverde:detalhe-produto' produto.slug %}" class="text-decoration-none text-dark">
+                                {{ produto.nome|truncatechars:30 }}
+                            </a>
+                        </h5>
+                        <p class="text-muted small mb-1">{{ produto.categoria.nome }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 text-success mb-0">€ {{ produto.preco }}</span>
+                            {% if user.is_authenticated %}
+                            <button class="btn btn-sm btn-outline-danger toggle-favorito" 
+                                    data-produto-id="{{ produto.id }}"
+                                    aria-label="Favoritar">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-info">
+                <i class="fas fa-search fa-2x mb-3"></i>
+                <h4>Sua busca por "{{ query }}" não encontrou resultados</h4>
+                <p class="mb-0">Tente ajustar os termos ou explorar nossas categorias</p>
+                <a href="{% url 'ecommerce_coverde:produto-listagem' %}" class="btn btn-success mt-3">
+                    Ver todos os produtos
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Paginação -->
+    {% if produtos.has_other_pages %}
+    <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center mt-4">
+            {% if produtos.has_previous %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?query={{ query }}&page={{ produtos.previous_page_number }}"
+                   aria-label="Anterior">
+                    &laquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+            {% endif %}
+
+            {% for num in produtos.paginator.page_range %}
+                {% if produtos.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?query={{ query }}&page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if produtos.has_next %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?query={{ query }}&page={{ produtos.next_page_number }}"
+                   aria-label="Próxima">
+                    &raquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Sistema de Favoritos com AJAX
+document.querySelectorAll('.toggle-favorito').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const produtoId = this.dataset.produtoId;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch(`/produtos/${produtoId}/favorito/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'added') {
+                this.innerHTML = '<i class="fas fa-heart"></i>';
+                this.classList.add('text-danger');
+            } else {
+                this.innerHTML = '<i class="far fa-heart"></i>';
+                this.classList.remove('text-danger');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+
+// Melhoria de UX: Foco automático no campo de busca
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="query"]');
+    if(searchInput) {
+        searchInput.focus();
+        searchInput.select();
+    }
+});
+</script>
+{% endblock %}

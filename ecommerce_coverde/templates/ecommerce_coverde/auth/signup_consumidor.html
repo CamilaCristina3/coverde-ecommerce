@@ -1,0 +1,68 @@
+{% extends "shared/base.html" %}
+{% load custom_tags %} 
+{% load static %}
+
+{% block title %}Registar como Consumidor - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="text-center mb-4">Registar como consumidor</h1>
+            <p class="text-center mb-4">Insere os teus dados de segurança</p>
+
+            <form method="post" class="bg-white p-4 rounded shadow-sm">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <h3 class="form-label">Email *</h3>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="form-label">Palavra-passe *</h3>
+                    {{ form.password1 }}
+                    <div class="form-text mt-2">
+                        <strong>A palavra-passe deve conter:</strong><br>
+                        • Mínimo de 4 caracteres;<br>
+                        • Mínimo 0 número;<br>
+                        • Mínimo 1 letra maiúscula;
+                    </div>
+                    {% if form.password1.errors %}
+                        <div class="text-danger">{{ form.password1.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <h3 class="form-label">Confirmar palavra-passe *</h3>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="text-danger">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <hr class="my-4">
+
+                <div class="form-check mb-4">
+                    {{ form.termos }}
+                    <label class="form-check-label" for="{{ form.termos.id_for_label }}">
+                        Concordo com os <strong>termos e condições</strong> *
+                    </label>
+                    {% if form.termos.errors %}
+                        <div class="text-danger">{{ form.termos.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Registar na COVERDE</button>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">Voltar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

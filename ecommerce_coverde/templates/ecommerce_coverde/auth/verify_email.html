@@ -1,0 +1,63 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Verificação de E-mail - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="border p-4 bg-white rounded shadow-sm">
+                <!-- Ícone/Cabeçalho -->
+                <div class="text-center mb-4">
+                    <i class="fas fa-envelope-circle-check fa-4x text-primary mb-3"></i>
+                    <h2>Verificação de E-mail</h2>
+                </div>
+
+                <!-- Mensagens do sistema -->
+                {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                    <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Conteúdo principal -->
+                <div class="text-center">
+                    {% if success %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Seu e-mail foi verificado com sucesso!
+                        </div>
+                        <a href="{% url 'ecommerce_coverde:login' %}" class="btn btn-success mt-3">
+                            Ir para Login
+                        </a>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            O link de verificação é inválido ou expirou.
+                        </div>
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+                            <a href="{% url 'ecommerce_coverde:reenviar_verificacao' %}" class="btn btn-primary">
+                                Reenviar Código
+                            </a>
+                            <a href="{% url 'ecommerce_coverde:login' %}" class="btn btn-outline-secondary">
+                                Ir para Login
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Ajuda -->
+                <div class="mt-4 pt-3 border-top text-center text-muted small">
+                    <p>Não recebeu o e-mail? Verifique sua pasta de spam ou 
+                    <a href="{% url 'ecommerce_coverde:reenviar_verificacao' %}">solicite um novo código</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

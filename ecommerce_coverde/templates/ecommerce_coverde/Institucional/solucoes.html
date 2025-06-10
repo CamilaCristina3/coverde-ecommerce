@@ -1,0 +1,174 @@
+{% extends 'shared/base.html' %}
+{% load custom_tags %} 
+
+{% load static %}
+
+{% block title %}Soluções Integradas - COVERDE{% endblock %}
+
+{% block header %}
+<header class="bg-light-green py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-dark mb-4">Soluções para um Futuro Sustentável</h1>
+                <p class="lead">Conectamos produtores locais a consumidores conscientes, promovendo a soberania alimentar e condições de trabalho dignas</p>
+            </div>
+            <div class="col-lg-6">
+                <img src="{% static 'img/solucoes-hero.jpg' %}" alt="Agricultura sustentável" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="py-5" id="soberania">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="fw-bold text-success">Soberania Alimentar</h2>
+                <div class="divider bg-success mx-auto"></div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-lg bg-success-light rounded-circle mb-4 mx-auto">
+                            <i class="fas fa-seedling text-success"></i>
+                        </div>
+                        <h3 class="h5">Circuitos Curtos</h3>
+                        <p>Eliminamos intermediários, conectando directamente produtores locais a consumidores, garantindo preços justos e frescura dos produtos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-lg bg-success-light rounded-circle mb-4 mx-auto">
+                            <i class="fas fa-flag text-success"></i>
+                        </div>
+                        <h3 class="h5">Produtos Locais</h3>
+                        <p>Valorizamos a produção nacional, reduzindo a pegada ecológica do transporte e fortalecendo a economia regional.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-lg bg-success-light rounded-circle mb-4 mx-auto">
+                            <i class="fas fa-leaf text-success"></i>
+                        </div>
+                        <h3 class="h5">Agricultura Sustentável</h3>
+                        <p>Incentivamos métodos de produção ecológicos que preservam os solos e a biodiversidade para as gerações futuras.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light" id="trabalho-digno">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="fw-bold text-success">Trabalho Digno</h2>
+                <div class="divider bg-success mx-auto"></div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="h5 text-success"><i class="fas fa-hand-holding-usd me-2"></i> Remuneração Justa</h3>
+                        <p>Garantimos que os produtores recebam preços equitativos por seus produtos, assegurando condições de vida dignas para suas famílias.</p>
+                        <ul class="list-check">
+                            <li>Transparência nos preços</li>
+                            <li>Pagamentos rápidos</li>
+                            <li>Negociação direta</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="h5 text-success"><i class="fas fa-users me-2"></i> Capacitação</h3>
+                        <p>Oferecemos formação técnica e empresarial para pequenos produtores aumentarem sua produtividade e qualidade de forma sustentável.</p>
+                        <ul class="list-check">
+                            <li>Cursos de agricultura biológica</li>
+                            <li>Gestão financeira</li>
+                            <li>Marketing digital</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" id="tecnologia">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2">
+                <h2 class="fw-bold text-success mb-4">Tecnologia a Serviço da Comunidade</h2>
+                <p>Nossa plataforma digital foi pensada para democratizar o acesso aos mercados:</p>
+                <ul class="list-check">
+                    <li>Interface simples para produtores de todas as idades</li>
+                    <li>Sistema de avaliação transparente</li>
+                    <li>Logística eficiente e compartilhada</li>
+                    <li>Acesso via mobile para zonas rurais</li>
+                </ul>
+            </div>
+            <div class="col-lg-6 order-lg-1">
+                <img src="{% static 'img/tech-farmer.jpg' %}" alt="Tecnologia no campo" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light-green">
+    <div class="container text-center">
+        <h2 class="fw-bold text-dark mb-4">Junte-se a Esta Revolução Alimentar</h2>
+        <p class="lead mb-5">Seja como produtor ou consumidor, sua escolha faz a diferença</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'ecommerce_coverde:signup_produtor' %}" class="btn btn-success btn-lg px-4">Cadastre-se como Produtor</a>
+            <a href="{% url 'ecommerce_coverde:product_list' %}" class="btn btn-outline-success btn-lg px-4">Compre Local</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block css_extra %}
+<style>
+    .divider {
+        width: 80px;
+        height: 3px;
+    }
+    .icon-lg {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .bg-success-light {
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+    .list-check {
+        list-style: none;
+        padding-left: 0;
+    }
+    .list-check li:before {
+        content: "✓";
+        color: #4CAF50;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}

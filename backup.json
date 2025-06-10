@@ -1,0 +1,37 @@
+[{
+    "model": "admin.logentry",
+    "pk": 1,
+    "fields": {
+        "action_time": "2025-05-27T19:17:25.166Z",
+        "user": 4,
+        "content_type": 11,
+        "object_id": "1",
+        "object_repr": "Legumes",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+}, {
+    "model": "admin.logentry",
+    "pk": 2,
+    "fields": {
+        "action_time": "2025-05-27T19:19:54.369Z",
+        "user": 4,
+        "content_type": 11,
+        "object_id": "2",
+        "object_repr": "Frutas e Vegetais",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+}, {
+    "model": "admin.logentry",
+    "pk": 3,
+    "fields": {
+        "action_time": "2025-05-27T19:21:03.976Z",
+        "user": 4,
+        "content_type": 11,
+        "object_id": "3",
+        "object_repr": "[NOME_DO_OBJETO]",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+}]
