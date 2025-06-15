@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Ambientes e variáveis
+.env
+.env.*
+venv/
+.venv/
+env/
+
+# Dumps MySQL
+*.sql
+
+# Google credentials
+*.json
+
+# Migrations — manter!
+# Remova as duas linhas abaixo se quiser versionar as migrations (recomendado)
+# **/migrations/*.py
+# !**/migrations/__init__.py
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
