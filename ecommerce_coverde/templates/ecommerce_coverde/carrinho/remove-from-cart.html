@@ -1,0 +1,14 @@
+{% if success %}
+{
+    "success": true,
+    "cart_total": "{{ cart_total|floatformat:2 }}",
+    "total_items": {{ total_items }},
+    "product_id": {{ product_id }},
+    "message": "Produto removido do carrinho"
+}
+{% else %}
+{
+    "success": false,
+    "error": "{{ error }}"
+}
+{% endif %}

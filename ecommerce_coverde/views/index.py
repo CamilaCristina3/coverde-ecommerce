@@ -3,61 +3,59 @@ import os
 from django.conf import settings
 from django.shortcuts import render
 from django.views import View
-from ..models import Produto, Categoria  # Removido Utilizador, pois não é necessário aqui
+from ..models import Produto, Categoria
+from django.views.generic import TemplateView
 
-class Index(View):
-    def get(self, request):
-        """Método para lidar com requisições GET"""
-        produtos = Produto.objects.filter(disponivel=True)
-        return render(request, 'ecommerce_coverde/core/index.html', {'produtos': produtos})
-        
-        # ✅ Obter categorias (limite de 8)
-        categorias = Categoria.objects.all()[:8]
-        
-        # ✅ Filtrar produtos por categoria, se aplicável
-        categoria_id = request.GET.get('categoria')
-        if categoria_id:
-            produtos = Produto.objects.filter(
-                categoria__id=categoria_id,
-                disponivel=True
-            )
-        else:
-            # ✅ Produtos em destaque (prioridade)
-            produtos_destaque = Produto.objects.filter(
-                destaque=True,
-                disponivel=True
-            ).order_by('-data_criacao')[:4]
-            
-            # ✅ Outros produtos aleatórios
-            outros_produtos = Produto.objects.filter(
-                disponivel=True
-            ).exclude(
-                id__in=[p.id for p in produtos_destaque]
-            ).order_by('?')[:8]  # 8 produtos aleatórios
-            
-            # ✅ Misturar os produtos
-            produtos = list(produtos_destaque) + list(outros_produtos)
-            random.shuffle(produtos)
 
-        # ✅ Selecionar imagem de capa aleatória
+class IndexView(TemplateView):
+    template_name = 'ecommerce_coverde/institucional/index.html'
+    NUMBER_OF_CATEGORIES = 8
+    NUMBER_OF_FEATURED_PRODUCTS = 4
+    NUMBER_OF_RANDOM_PRODUCTS = 8
+    
+    def get_cover_image(self):
+        """Obtém uma imagem de capa aleatória ou a padrão"""
         covers_folder = os.path.join(settings.BASE_DIR, 'static', 'imgs', 'covers')
         try:
-            all_images = [
+            image_files = [
                 f for f in os.listdir(covers_folder) 
                 if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
             ]
-            selected_image = random.choice(all_images) if all_images else 'default-cover.jpg'
-        except FileNotFoundError:
-            selected_image = 'default-cover.jpg'
-            
-        selected_image_url = f'imgs/covers/{selected_image}'
+            selected_image = random.choice(image_files) if image_files else 'default-cover.jpg'
+            return f'imgs/covers/{selected_image}'
+        except (FileNotFoundError, OSError):
+            return 'imgs/covers/default-cover.jpg'
 
-        # ✅ Contexto para o template
-        context = {
-            "categorias": categorias,
-            "produtos": produtos,
-            "cover_image": selected_image_url,
-            "user": request.user  # O Django já fornece o usuário autenticado
-        }
+    def get_filtered_products(self, categoria_id=None):
+        """Obtém produtos filtrados por categoria ou a seleção padrão"""
+        if categoria_id:
+            return Produto.objects.filter(
+                categoria__id=categoria_id,
+                disponivel=True
+            ).select_related('categoria')
         
-        return render(request, "index.html", context)
+        produtos_destaque = Produto.objects.filter(
+            destaque=True,
+            disponivel=True
+        ).order_by('-data_criacao')[:self.NUMBER_OF_FEATURED_PRODUCTS]
+        
+        outros_produtos = Produto.objects.filter(
+            disponivel=True
+        ).exclude(
+            id__in=[p.id for p in produtos_destaque]
+        ).order_by('?')[:self.NUMBER_OF_RANDOM_PRODUCTS]
+        
+        product_list = list(produtos_destaque) + list(outros_produtos)
+        random.shuffle(product_list)
+        return product_list
+
+    def get(self, request):
+        """Método principal para lidar com requisições GET"""
+        context = {
+            "categorias": Categoria.objects.all()[:self.NUMBER_OF_CATEGORIES],
+            "produtos": self.get_filtered_products(request.GET.get('categoria')),
+            "cover_image": self.get_cover_image(),
+            "user": request.user
+        }
+        # CORREÇÃO: Usando o mesmo caminho do template que você usou originalmente
+        return render(request, "ecommerce_coverde/core/index.html", context)

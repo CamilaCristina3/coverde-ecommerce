@@ -1,111 +1,175 @@
-# ecommerce_coverde/views/carrinho.py
-from django.views import View
-from django.shortcuts import redirect, get_object_or_404, render
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from ..models import Produto, Carrinho
+from django.contrib import messages
+from django.views import View
+from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+from decimal import Decimal
+from ..models import Produto
 
-class CarrinhoView(LoginRequiredMixin, View):
-    """View para exibir o carrinho do usuário"""
-    def get(self, request):
-        itens_carrinho = Carrinho.objects.filter(utilizador=request.user).select_related('produto')
-        total = sum(item.subtotal() for item in itens_carrinho)
+class CarrinhoView(View):
+    """Visualização principal do carrinho com todos os itens e totais"""
+    template_name = 'ecommerce_coverde/carrinho/carrinho.html'
+
+    def get(self, request, *args, **kwargs):
+        carrinho = request.session.get('carrinho', {})
+        produtos_no_carrinho = []
+        total_geral = Decimal('0.00')
+        quantidade_total = 0
+
+        # Obter todos os produtos do carrinho com suas quantidades
+        for produto_id, quantidade in carrinho.items():
+            produto = get_object_or_404(Produto, id=produto_id, disponivel=True)
+            subtotal = produto.preco * Decimal(quantidade)
+            
+            produtos_no_carrinho.append({
+                'produto': produto,
+                'quantidade': quantidade,
+                'subtotal': subtotal
+            })
+            
+            total_geral += subtotal
+            quantidade_total += quantidade
+
+        context = {
+            'produtos_no_carrinho': produtos_no_carrinho,
+            'total_geral': total_geral,
+            'quantidade_total': quantidade_total
+        }
         
-        return render(request, 'ecommerce_coverde/carrinho/carrinho.html', {
-            'itens_carrinho': itens_carrinho,
-            'total': total
+        return render(request, self.template_name, context)
+
+
+class AdicionarAoCarrinhoView(View):
+    """Adiciona itens ao carrinho com verificação de stock"""
+    @method_decorator(require_POST)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, produto_id):
+        produto = get_object_or_404(Produto, id=produto_id, disponivel=True)
+        quantidade = int(request.POST.get('quantidade', 1))
+        
+        # Verificar se há estoque suficiente
+        if quantidade > produto.stock:
+            messages.error(request, f"Quantidade indisponível em stock para {produto.nome}")
+            return redirect(request.META.get('HTTP_REFERER', 'ecommerce_coverde:listagem-produto'))
+        
+        carrinho = request.session.get('carrinho', {})
+        produto_key = str(produto.id)
+        
+        # Verificar se a nova quantidade excede o estoque
+        nova_quantidade = carrinho.get(produto_key, 0) + quantidade
+        if nova_quantidade > produto.stock:
+            messages.error(request, f"Você já tem {carrinho.get(produto_key, 0)} itens no carrinho. Não há estoque suficiente para adicionar mais {quantidade}.")
+            return redirect(request.META.get('HTTP_REFERER', 'ecommerce_coverde:listagem-produto'))
+        
+        # Atualizar carrinho
+        carrinho[produto_key] = nova_quantidade
+        request.session['carrinho'] = carrinho
+        request.session.modified = True
+        
+        # Resposta para AJAX
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'cart_count': sum(carrinho.values()),
+                'message': f"{quantidade} × {produto.nome} adicionado ao carrinho!"
+            })
+        
+        messages.success(request, f"{quantidade} × {produto.nome} adicionado ao carrinho!")
+        return redirect(request.META.get('HTTP_REFERER', 'ecommerce_coverde:listagem-produto'))
+
+    class CarrinhoAPIView(View):
+     """API para operações com o carrinho"""
+    
+    def get(self, request):
+        carrinho = request.session.get('carrinho', {})
+        produtos = []
+        total = Decimal('0.00')
+        
+        for produto_id, quantidade in carrinho.items():
+            produto = get_object_or_404(Produto, id=produto_id)
+            subtotal = produto.preco * Decimal(quantidade)
+            produtos.append({
+                'id': produto.id,
+                'nome': produto.nome,
+                'preco': str(produto.preco),
+                'quantidade': quantidade,
+                'subtotal': str(subtotal),
+                'imagem': produto.imagem.url if produto.imagem else None
+            })
+            total += subtotal
+        
+        return JsonResponse({
+            'success': True,
+            'produtos': produtos,
+            'total': str(total),
+            'total_itens': sum(carrinho.values())
         })
 
-class AdicionarAoCarrinhoView(LoginRequiredMixin, View):
-    """View para adicionar itens ao carrinho"""
+
+class RemoverDoCarrinhoView(View):
+    """Remove itens do carrinho completamente"""
+    @method_decorator(require_POST)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def post(self, request, produto_id):
         produto = get_object_or_404(Produto, id=produto_id)
+        carrinho = request.session.get('carrinho', {})
         
-        # Verifica se há estoque disponível
-        if produto.quantidade < 1:
-            messages.warning(request, 'Este produto está indisponível no momento.')
-            return redirect('ecommerce_coverde:produto-detalhe', slug=produto.slug)
+        if str(produto_id) in carrinho:
+            del carrinho[str(produto_id)]
+            request.session['carrinho'] = carrinho
+            request.session.modified = True
+            messages.success(request, f"{produto.nome} removido do carrinho")
         
-        carrinho_item, created = Carrinho.objects.get_or_create(
-            utilizador=request.user,
-            produto=produto,
-            defaults={'quantidade': 1}
-        )
-        
-        if not created:
-            if carrinho_item.quantidade < produto.quantidade:
-                carrinho_item.quantidade += 1
-                carrinho_item.save()
-                messages.success(request, f'Mais uma unidade de {produto.nome} foi adicionada ao seu carrinho!')
-            else:
-                messages.warning(request, f'Quantidade máxima disponível de {produto.nome} já está no seu carrinho.')
-        else:
-            messages.success(request, f'{produto.nome} foi adicionado ao seu carrinho!')
-        
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': True,
-                'carrinho_count': Carrinho.objects.carrinho_count(request.user)
-            })
-            
-        return redirect('ecommerce_coverde:carrinho')
+        return redirect('carrinho')
 
-class RemoverDoCarrinhoView(LoginRequiredMixin, View):
-    """View para remover itens do carrinho"""
-    def post(self, request, item_id):
-        carrinho_item = get_object_or_404(Carrinho, id=item_id, utilizador=request.user)
-        produto_nome = carrinho_item.produto.nome
-        carrinho_item.delete()
-        
-        messages.success(request, f'{produto_nome} foi removido do seu carrinho!')
-        
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': True,
-                'carrinho_count': Carrinho.objects.carrinho_count(request.user)
-            })
-            
-        return redirect('ecommerce_coverde:carrinho')
 
-class AtualizarCarrinhoView(LoginRequiredMixin, View):
-    """View para atualizar quantidades no carrinho"""
-    def post(self, request, item_id):
-        carrinho_item = get_object_or_404(Carrinho, id=item_id, utilizador=request.user)
-        nova_quantidade = int(request.POST.get('quantidade', 1))
-        
-        if nova_quantidade < 1:
-            carrinho_item.delete()
-            messages.success(request, f'{carrinho_item.produto.nome} foi removido do seu carrinho!')
-        else:
-            if nova_quantidade > carrinho_item.produto.quantidade:
-                messages.warning(request, f'Quantidade indisponível para {carrinho_item.produto.nome}. Máximo: {carrinho_item.produto.quantidade}')
-                nova_quantidade = carrinho_item.produto.quantidade
-            
-            carrinho_item.quantidade = nova_quantidade
-            carrinho_item.save()
-            messages.success(request, f'Quantidade de {carrinho_item.produto.nome} atualizada!')
-        
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': True,
-                'carrinho_count': Carrinho.objects.carrinho_count(request.user),
-                'subtotal': carrinho_item.subtotal() if nova_quantidade > 0 else 0,
-                'total': sum(item.subtotal() for item in Carrinho.objects.filter(utilizador=request.user))
-            })
-            
-        return redirect('ecommerce_coverde:carrinho')
+class AtualizarCarrinhoView(View):
+    """Atualiza quantidades no carrinho com verificação de stock"""
+    @method_decorator(require_POST)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
-class LimparCarrinhoView(LoginRequiredMixin, View):
-    """View para limpar completamente o carrinho"""
     def post(self, request):
-        Carrinho.objects.filter(utilizador=request.user).delete()
-        messages.success(request, 'Seu carrinho foi esvaziado com sucesso!')
+        carrinho = request.session.get('carrinho', {})
+        atualizacoes = request.POST
         
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': True,
-                'carrinho_count': 0
-            })
-            
-        return redirect('ecommerce_coverde:carrinho')
+        for produto_id, quantidade in atualizacoes.items():
+            if produto_id.startswith('quantidade_'):
+                produto_id = produto_id.replace('quantidade_', '')
+                quantidade = int(quantidade)
+                
+                if quantidade <= 0:
+                    if produto_id in carrinho:
+                        del carrinho[produto_id]
+                    continue
+                
+                produto = get_object_or_404(Produto, id=produto_id, disponivel=True)
+                
+                if quantidade > produto.stock:
+                    messages.error(request, f"stock insuficiente para {produto.nome} (máx: {produto.stock})")
+                    continue
+                
+                carrinho[produto_id] = quantidade
+        
+        request.session['carrinho'] = carrinho
+        request.session.modified = True
+        messages.success(request, "Carrinho atualizado com sucesso")
+        return redirect('carrinho')
+
+
+class LimparCarrinhoView(View):
+    """Esvazia o carrinho completamente"""
+    @method_decorator(require_POST)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request):
+        request.session['carrinho'] = {}
+        request.session.modified = True
+        messages.info(request, "Seu carrinho foi esvaziado")
+        return redirect('carrinho')

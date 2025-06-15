@@ -1,60 +1,25 @@
-{% extends "shared/base.html" %}
-{% load i18n %}
+<form method="post" class="needs-validation" novalidate>
+  {% csrf_token %}
 
-{% block title %}{% if object %}{% trans "Editar Categoria" %}{% else %}{% trans "Nova Categoria" %}{% endif %}{% endblock %}
-
-{% block content %}
-<div class="container py-5">
-  <h2>{% if object %}{% trans "Editar Categoria" %}{% else %}{% trans "Nova Categoria" %}{% endif %}</h2>
-  
-  <form method="post">
-    {% csrf_token %}
-    
-    <div class="form-group">
-      <label for="{{ form.nome.id_for_label }}">{% trans "Nome" %}:</label>
-      {{ form.nome }}
-      <small class="form-text text-muted">{{ form.nome.help_text }}</small>
-      {{ form.nome.errors }}
-    </div>
-    
-    <div class="form-group">
-      <label for="{{ form.icone.id_for_label }}">{% trans "Ícone" %}:</label>
-      {{ form.icone }}
-      <small class="form-text text-muted">
-        {% trans "Ícones Font Awesome (ex: fa-leaf, fa-apple-alt)" %}
-      </small>
-      {{ form.icone.errors }}
-    </div>
-    
-    <div class="form-group">
-      <label for="{{ form.descricao.id_for_label }}">{% trans "Descrição" %}:</label>
-      {{ form.descricao }}
-      {{ form.descricao.errors }}
-    </div>
-    
-    <div class="form-group">
-      <label for="{{ form.ordem_menu.id_for_label }}">{% trans "Ordem no Menu" %}:</label>
-      {{ form.ordem_menu }}
-      {{ form.ordem_menu.errors }}
-    </div>
-
+  {% for field in form.visible_fields %}
     <div class="mb-3">
-        <label for="unidade" class="form-label">Unidade de Medida</label>
-        <select name="unidade" id="unidade" class="form-select" required>
-          <option value="kg">Quilograma (kg)</option>
-          <option value="g">Grama (g)</option>
-          <option value="un">Unidade (un)</option>
-          <option value="l">Litro (l)</option>
-          <option value="ml">Mililitro (ml)</option>
-        </select>
-      </div>
-    
-    <button type="submit" class="btn btn-primary">
-      <i class="fas fa-save"></i> {% if object %}{% trans "Atualizar" %}{% else %}{% trans "Criar" %}{% endif %}
-    </button>
-    <a href="{% url 'ecommerce_coverde:categoria_listagem' %}" class="btn btn-secondary ml-2">
-      <i class="fas fa-times"></i> {% trans "Cancelar" %}
-    </a>
-  </form>
-</div>
-{% endblock %}
+      <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}
+        <small class="form-text text-muted">{{ field.help_text }}</small>
+      {% endif %}
+      {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+
+  <div class="form-check mb-3">
+    <input type="checkbox" class="form-check-input" id="terms" required>
+    <label class="form-check-label" for="terms">
+      Concordo com os <a href="#">termos e condições</a>.
+    </label>
+  </div>
+
+  <button type="submit" class="btn btn-success w-100">Criar Conta</button>
+</form>

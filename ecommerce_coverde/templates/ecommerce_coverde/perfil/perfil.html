@@ -1,121 +1,85 @@
 {% extends 'shared/base.html' %}
-{% load custom_tags %} 
 {% load static %}
+
+{% block title %}Meu Perfil - {{ user.get_full_name }}{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-lg-3 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <img src="{{ user.imagem_perfil.url|default:'static/css/images/default-profile.png' }}" 
-                         class="rounded-circle mb-3 img-thumbnail" 
-                         width="150" height="150" 
-                         alt="Foto de perfil">
-                    <h5 class="card-title">{{ user.get_full_name }}</h5>
-                    <p class="text-muted mb-1">
-                        <i class="fas fa-user-tag me-2"></i>
-                        {{ user.get_tipo_display }}
-                    </p>
-                    <p class="text-muted">
-                        <i class="fas fa-envelope me-2"></i>
-                        {{ user.email }}
-                    </p>
-                    
-                    <hr>
-                    
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'perfil' %}">
-                                <i class="fas fa-user me-2"></i> Meu Perfil
-                            </a>
-                        </li>
-                        {% if user.tipo == 'P' %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'produtor_dashboard' %}">
-                                <i class="fas fa-chart-line me-2"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'adicionar_produto' %}">
-                                <i class="fas fa-plus-circle me-2"></i> Adicionar Produto
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'consumidor_dashboard' %}">
-                                <i class="fas fa-shopping-bag me-2"></i> Meus Pedidos
-                            </a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">
-                                <i class="fas fa-sign-out-alt me-2"></i> Sair
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="col-lg-9">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">Editar Perfil</h4>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="bi bi-person-circle me-2"></i>Meu Perfil
+                        </h4>
+                       <a href="{% url 'ecommerce_coverde:perfil-edit' %}" class="btn btn-primary">
+    <i class="fas fa-edit"></i> Editar Perfil
+</a>
+                    </div>
                 </div>
+                
                 <div class="card-body">
-                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-                        {% csrf_token %}
+        
+                    <div class="row">
+                      
                         
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="id_first_name" class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="id_first_name" 
-                                       name="first_name" value="{{ form.first_name.value|default:user.first_name }}" required>
-                                <div class="invalid-feedback">
-                                    Por favor, insira seu nome.
+                        <!-- Coluna das Informações -->
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-muted">Nome Completo</h5>
+                                    <p class="fs-5">{{ user.get_full_name|default:"Não informado" }}</p>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-muted">Email</h5>
+                                    <p class="fs-5">{{ user.email }}</p>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-muted">Telefone</h5>
+                                    <p class="fs-5">{{ user.telefone|default:"Não informado" }}</p>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-muted">NIF</h5>
+                                    <p class="fs-5">{{ user.nif|default:"Não informado" }}</p>
+                                </div>
+                                
+                                {% if user.tipo == 'P' %}
+                                <div class="col-12 mb-3">
+                                    <h5 class="text-muted">Nome da Empresa</h5>
+                                    <p class="fs-5">{{ user.nome_empresa|default:"Não informado" }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="col-12 mb-3">
+                                    <h5 class="text-muted">Endereço</h5>
+                                    <p class="fs-5">
+                                        {% if user.morada %}
+                                            {{ user.morada }}, {{ user.codigo_postal }} {{ user.localidade }}
+                                        {% else %}
+                                            Não informado
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                
+                                <div class="col-12 mt-4">
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                       <a href="{% url 'ecommerce_coverde:password_change' %}" class="btn btn-outline-secondary">
+    <i class="fas fa-key me-2"></i>Alterar Senha
+</a>
+                                        <a href="{% url 'ecommerce_coverde:pedido_list' %}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="bi bi-bag-check"></i> Meus Pedidos
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-md-6">
-                                <label for="id_last_name" class="form-label">Sobrenome</label>
-                                <input type="text" class="form-control" id="id_last_name" 
-                                       name="last_name" value="{{ form.last_name.value|default:user.last_name }}" required>
-                            </div>
-                            
-                            <div class="col-12">
-                                <label for="id_email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="id_email" 
-                                       name="email" value="{{ form.email.value|default:user.email }}" required>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label for="id_telefone" class="form-label">Telefone</label>
-                                <input type="text" class="form-control" id="id_telefone" 
-                                       name="telefone" value="{{ form.telefone.value|default:user.telefone }}">
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label for="id_nif" class="form-label">NIF</label>
-                                <input type="text" class="form-control" id="id_nif" 
-                                       name="nif" value="{{ form.nif.value|default:user.nif }}">
-                            </div>
-                            
-                            <div class="col-12">
-                                <label for="id_imagem_perfil" class="form-label">Foto de Perfil</label>
-                                <input class="form-control" type="file" id="id_imagem_perfil" name="imagem_perfil">
-                                <div class="form-text">Imagem quadrada funciona melhor (máx. 2MB)</div>
-                            </div>
-                            
-                            <div class="col-12 mt-4">
-                                <button type="submit" class="btn btn-success px-4">
-                                    <i class="fas fa-save me-2"></i> Salvar Alterações
-                                </button>
-                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,23 +87,18 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-// Validação do formulário no frontend
-(() => {
-  'use strict'
-  const forms = document.querySelectorAll('.needs-validation')
-  
-  Array.from(forms).forEach(form => {
-    form.addEventListener('submit', event => {
-      if (!form.checkValidity()) {
-        event.preventDefault()
-        event.stopPropagation()
-      }
-      
-      form.classList.add('was-validated')
-    }, false)
-  })
-})()
-</script>
+{% block extra_css %}
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    .img-thumbnail {
+        border: 3px solid #198754;
+        object-fit: cover;
+    }
+</style>
 {% endblock %}

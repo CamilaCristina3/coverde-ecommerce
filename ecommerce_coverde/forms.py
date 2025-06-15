@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import RegexValidator
-from .models import Utilizador, Produto
-from .models import Pedido
+from .models import Utilizador, Produto, Pedido
+from django.utils import timezone
 
 # ========== FORMULÁRIOS DE AUTENTICAÇÃO ==========
 class BaseRegistrationForm(UserCreationForm):
@@ -10,7 +10,8 @@ class BaseRegistrationForm(UserCreationForm):
         label="Email *",
         widget=forms.EmailInput(attrs={
             'class': 'form-control form-control-lg',
-            'placeholder': 'exemplo@email.com'
+            'placeholder': 'exemplo@email.com',
+            'aria-describedby': 'emailHelp'
         }),
         help_text="Será usado para fazer login no sistema"
     )
@@ -37,8 +38,10 @@ class BaseRegistrationForm(UserCreationForm):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control form-control-lg',
-            'placeholder': '+351 912 345 678'
-        })
+            'placeholder': '+351 912 345 678',
+            'pattern': '^(\+351)?[ ]?[9][1236][ ]?[0-9]{3}[ ]?[0-9]{3}$'
+        }),
+        help_text="Formato: +351 912 345 678"
     )
     
     password1 = forms.CharField(
@@ -46,7 +49,8 @@ class BaseRegistrationForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={
             'class': 'form-control form-control-lg',
             'placeholder': '••••••••',
-            'data-toggle': 'password'
+            'data-toggle': 'password',
+            'aria-describedby': 'passwordHelp'
         }),
         help_text="Mínimo 8 caracteres com pelo menos 1 letra maiúscula e 1 número"
     )
@@ -63,7 +67,8 @@ class BaseRegistrationForm(UserCreationForm):
         label="Li e aceito os Termos e Condições *",
         required=True,
         widget=forms.CheckboxInput(attrs={
-            'class': 'form-check-input'
+            'class': 'form-check-input',
+            'aria-required': 'true'
         })
     )
 
@@ -80,19 +85,21 @@ class BaseRegistrationForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
-        label="Email",
+        label="Email *",
         widget=forms.EmailInput(attrs={
             'class': 'form-control form-control-lg',
-            'placeholder': 'exemplo@email.com'
+            'placeholder': 'exemplo@email.com',
+            'autocomplete': 'username'
         })
     )
-    
+
     password = forms.CharField(
-        label="Senha",
+        label="Senha *",
         widget=forms.PasswordInput(attrs={
             'class': 'form-control form-control-lg',
             'placeholder': '••••••••',
-            'data-toggle': 'password'
+            'data-toggle': 'password',
+            'autocomplete': 'current-password'
         })
     )
 
@@ -118,7 +125,8 @@ class ProdutorRegistrationForm(BaseRegistrationForm):
         validators=[RegexValidator(r'^\d{9}$', 'NIF deve conter exatamente 9 dígitos')],
         widget=forms.TextInput(attrs={
             'class': 'form-control form-control-lg',
-            'placeholder': '123456789'
+            'placeholder': '123456789',
+            'inputmode': 'numeric'
         })
     )
     
@@ -140,6 +148,7 @@ class ProdutorRegistrationForm(BaseRegistrationForm):
     
     codigo_postal = forms.CharField(
         label="Código Postal *",
+        validators=[RegexValidator(r'^\d{4}-\d{3}$', 'Código Postal deve estar no formato 1234-567')],
         widget=forms.TextInput(attrs={
             'class': 'form-control form-control-lg',
             'placeholder': '1234-567'
@@ -171,6 +180,7 @@ class ConsumidorRegistrationForm(BaseRegistrationForm):
     
     codigo_postal = forms.CharField(
         label="Código Postal *",
+        validators=[RegexValidator(r'^\d{4}-\d{3}$', 'Código Postal deve estar no formato 1234-567')],
         widget=forms.TextInput(attrs={
             'class': 'form-control form-control-lg',
             'placeholder': '1234-567'
@@ -195,14 +205,39 @@ class PerfilUpdateForm(forms.ModelForm):
     class Meta:
         model = Utilizador
         fields = ['first_name', 'last_name', 'email', 'telefone', 'nif', 'imagem_perfil']
+        widgets = {
+            'imagem_perfil': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*',
+                'aria-label': 'Selecione uma imagem de perfil'
+            })
+        }
 
 class ProdutoForm(forms.ModelForm):
+    data_colheita = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'max': timezone.now().date().isoformat()
+        }),
+        label="Data de Colheita/Produção"
+    )
+    
+    certificado_biologico = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input',
+            'style': 'width: 20px; height: 20px;'
+        }),
+        label="Produto Biológico"
+    )
+
     class Meta:
         model = Produto
         fields = [
             'nome', 'slug', 'descricao', 'preco', 'unidade', 'stock',
-            'imagem', 'data_colheita', 'certificado_biologico',
-            'categoria', 'destaque', 'disponivel'
+            'imagem', 'categoria', 'destaque', 'disponivel'
         ]
         widgets = {
             'nome': forms.TextInput(attrs={
@@ -235,14 +270,6 @@ class ProdutoForm(forms.ModelForm):
                 'class': 'form-control',
                 'accept': 'image/*'
             }),
-            'data_colheita': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
-            'certificado_biologico': forms.CheckboxInput(attrs={
-                'class': 'form-check-input',
-                'style': 'width: 20px; height: 20px;'
-            }),
             'categoria': forms.Select(attrs={
                 'class': 'form-select'
             }),
@@ -255,25 +282,6 @@ class ProdutoForm(forms.ModelForm):
                 'style': 'width: 20px; height: 20px;'
             }),
         }
-        labels = {
-            'nome': 'Nome do Produto',
-            'slug': 'URL Amigável',
-            'descricao': 'Descrição',
-            'preco': 'Preço (€)',
-            'unidade': 'Unidade de Medida',
-            'stock': 'Quantidade em Stock',
-            'imagem': 'Imagem do Produto',
-            'data_colheita': 'Data de Colheita/Produção',
-            'certificado_biologico': 'Produto Biológico',
-            'categoria': 'Categoria',
-            'destaque': 'Destacar este produto',
-            'disponivel': 'Disponível para venda'
-        }
-        help_texts = {
-            'slug': 'Identificador único para URLs (gerado automaticamente)',
-            'data_colheita': 'Data estimada de colheita ou produção',
-            'certificado_biologico': 'Marque se o produto tem certificação biológica',
-        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -284,31 +292,48 @@ class ProdutoForm(forms.ModelForm):
 
 class ResendVerificationForm(forms.Form):
     email = forms.EmailField(
-        label="E-mail",
+        label="E-mail *",
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'seu@email.com'
+            'placeholder': 'seu@email.com',
+            'autocomplete': 'email'
         })
     )
-
 
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
         fields = ['status', 'endereco_entrega', 'metodo_pagamento']
         widgets = {
-            'endereco_entrega': forms.Textarea(attrs={'rows': 3}),
+            'endereco_entrega': forms.Textarea(attrs={
+                'rows': 3, 
+                'class': 'form-control',
+                'placeholder': 'Rua, Número, Código Postal, Localidade'
+            }),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'metodo_pagamento': forms.Select(attrs={'class': 'form-select'})
         }
 
 class CheckoutForm(forms.ModelForm):
+    metodo_pagamento = forms.ChoiceField(
+        choices=[
+            ('cartao', 'Cartão de Crédito'),
+            ('transferencia', 'Transferência Bancária'),
+            ('mbway', 'MBWay'),
+        ],
+        widget=forms.RadioSelect(attrs={
+            'class': 'form-check-input'
+        }),
+        label="Método de Pagamento *"
+    )
+    
     class Meta:
         model = Pedido
         fields = ['endereco_entrega', 'metodo_pagamento']
         widgets = {
-            'endereco_entrega': forms.Textarea(attrs={'rows': 3}),
-            'metodo_pagamento': forms.RadioSelect(choices=[
-                ('cartao', 'Cartão de Crédito'),
-                ('transferencia', 'Transferência Bancária'),
-                ('mbway', 'MBWay'),
-            ])
+            'endereco_entrega': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'form-control',
+                'placeholder': 'Rua, Número, Código Postal, Localidade'
+            }),
         }

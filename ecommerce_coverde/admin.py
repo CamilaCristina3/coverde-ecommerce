@@ -7,10 +7,8 @@ from django.utils.text import slugify
 
 from .models import (
     Utilizador, Produto, Categoria, Pedido,
-    ItemPedido, Carrinho, ItemCarrinho, Favorito
+    ItemPedido, Carrinho, ItemCarrinho, Favorito, ContactMessage
 )
-from .models.contacto import ContactMessage
-
 
 class ProdutorFilter(admin.SimpleListFilter):
     title = 'Produtor'
@@ -24,7 +22,6 @@ class ProdutorFilter(admin.SimpleListFilter):
         if self.value():
             return queryset.filter(produtor__id=self.value())
         return queryset
-
 
 @admin.register(Utilizador)
 class UtilizadorAdmin(admin.ModelAdmin):
@@ -69,19 +66,39 @@ class UtilizadorAdmin(admin.ModelAdmin):
         return "-"
     imagem_perfil_preview.short_description = 'Preview'
 
-
 @admin.register(Produto)
 class ProdutoAdmin(admin.ModelAdmin):
     list_display = ('nome', 'produtor_link', 'preco', 'unidade',
-                    'stock', 'disponivel', 'destaque', 'imagem_preview')
-    list_filter = (ProdutorFilter, 'disponivel', 'destaque', 'categoria', 'certificado_biologico')
+                    'stock', 'disponivel', 'destaque', 'certificado_biologico', 
+                    'data_colheita', 'imagem_preview')
+    list_filter = (ProdutorFilter, 'disponivel', 'destaque', 'categoria', 
+                   'certificado_biologico', 'data_colheita')
     search_fields = ('nome', 'descricao', 'produtor__first_name', 'produtor__last_name')
-    list_editable = ('preco', 'stock', 'disponivel', 'destaque')
-    readonly_fields = ('data_criacao', 'imagem_preview')
+    list_editable = ('preco', 'stock', 'disponivel', 'destaque', 'certificado_biologico')
+    readonly_fields = ('data_criacao', 'imagem_preview', 'slug')
     prepopulated_fields = {'slug': ('nome',)}
     autocomplete_fields = ['produtor', 'categoria']
     date_hierarchy = 'data_criacao'
-    actions = ['marcar_como_indisponivel']
+    actions = ['marcar_como_indisponivel', 'marcar_como_biologico']
+
+    fieldsets = (
+        (None, {
+            'fields': ('nome', 'slug', 'descricao', 'produtor', 'categoria')
+        }),
+        ('Informações Comerciais', {
+            'fields': ('preco', 'unidade', 'stock', 'disponivel', 'destaque')
+        }),
+        ('Certificações', {
+            'fields': ('certificado_biologico', 'data_colheita')
+        }),
+        ('Imagem', {
+            'fields': ('imagem', 'imagem_preview')
+        }),
+        ('Metadados', {
+            'fields': ('data_criacao',),
+            'classes': ('collapse',)
+        }),
+    )
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('produtor', 'categoria')
@@ -105,6 +122,10 @@ class ProdutoAdmin(admin.ModelAdmin):
         self.message_user(request, f"{updated} produtos marcados como indisponíveis")
     marcar_como_indisponivel.short_description = "Marcar selecionados como indisponíveis"
 
+    def marcar_como_biologico(self, request, queryset):
+        updated = queryset.update(certificado_biologico=True)
+        self.message_user(request, f"{updated} produtos marcados como biológicos")
+    marcar_como_biologico.short_description = "Marcar selecionados como biológicos"
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
@@ -112,7 +133,6 @@ class CategoriaAdmin(admin.ModelAdmin):
     search_fields = ('nome', 'descricao')
     prepopulated_fields = {'slug': ('nome',)}
     list_editable = ('ordem_menu', 'icone')
-
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
@@ -130,7 +150,6 @@ class PedidoAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href="{url}">{obj.utilizador.get_full_name()}</a>')
     utilizador_link.short_description = 'Cliente'
 
-
 @admin.register(ItemPedido)
 class ItemPedidoAdmin(admin.ModelAdmin):
     list_display = ('pedido', 'produto', 'quantidade', 'preco', 'subtotal')
@@ -139,7 +158,6 @@ class ItemPedidoAdmin(admin.ModelAdmin):
     def subtotal(self, obj):
         return f"{obj.subtotal:.2f}€"
     subtotal.short_description = 'Subtotal'
-
 
 @admin.register(Carrinho)
 class CarrinhoAdmin(admin.ModelAdmin):
@@ -152,7 +170,6 @@ class CarrinhoAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href="{url}">{obj.utilizador.get_full_name()}</a>')
     utilizador_link.short_description = 'Utilizador'
 
-
 @admin.register(ItemCarrinho)
 class ItemCarrinhoAdmin(admin.ModelAdmin):
     list_display = ('carrinho', 'produto', 'quantidade', 'preco', 'subtotal')
@@ -161,7 +178,6 @@ class ItemCarrinhoAdmin(admin.ModelAdmin):
     def subtotal(self, obj):
         return f"{obj.subtotal:.2f}€"
     subtotal.short_description = 'Subtotal'
-
 
 @admin.register(Favorito)
 class FavoritoAdmin(admin.ModelAdmin):
@@ -179,10 +195,10 @@ class FavoritoAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href="{url}">{obj.produto.nome}</a>')
     produto_link.short_description = 'Produto'
 
-
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ('nome', 'email', 'assunto', 'data_envio')
     search_fields = ('nome', 'email', 'assunto', 'mensagem')
     readonly_fields = ('data_envio',)
     ordering = ('-data_envio',)
+    list_filter = ('data_envio',)

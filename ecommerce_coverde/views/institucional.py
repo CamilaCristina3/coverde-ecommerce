@@ -1,4 +1,9 @@
 from django.shortcuts import render
+from django.views.generic import TemplateView
+
+class IndexView(TemplateView):
+    """View para a página inicial"""
+    template_name = 'ecommerce_coverde/institucional/index.html'
 
 def sobre(request):
     return render(request, 'ecommerce_coverde/institucional/sobre.html')
@@ -14,5 +19,6 @@ def politica_privacidade(request):
 
 def termos_condicoes(request):
     return render(request, 'ecommerce_coverde/institucional/termos_condicoes.html')
+
 def faq(request):
     return render(request, 'ecommerce_coverde/institucional/faq.html')

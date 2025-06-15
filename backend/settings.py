@@ -104,6 +104,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'ecommerce_coverde.Utilizador'
+AUTHENTICATION_BACKENDS = [
+    'ecommerce_coverde.backends.EmailAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
 
 LOGIN_URL = 'ecommerce_coverde:login'
 LOGIN_REDIRECT_URL = 'ecommerce_coverde:consumidor_dashboard'

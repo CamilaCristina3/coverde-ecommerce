@@ -1,39 +1,190 @@
 {% extends "shared/base.html" %}
-{% load custom_tags %} 
 {% load static %}
 
-{% block title %}Registro de Produtor - COVERDE{% endblock %}
+{% block title %}Registo de Produtor - COVERDE{% endblock %}
 
 {% block content %}
-<!-- Exemplo para registration_form.html -->
-<div class="container my-5">
-  <div class="row justify-content-center">
-      <div class="col-md-6">
-          <div class="border p-4 bg-white rounded">
-              <h1 class="text-center mb-4">Bem-vindo/a</h1>
-              <p class="text-muted text-center mb-4">Insira os seus dados de segurança.</p>
-              
-              <!-- Seletor de Tipo -->
-              <div class="d-flex justify-content-center mb-4">
-                  <div class="btn-group" role="group">
-                      <button type="button" class="btn btn-outline-success active">Produtor</button>
-                      <button type="button" class="btn btn-outline-secondary">Consumidor</button>
-                  </div>
-              </div>
-              
-              {% include "ecommerce_coverde/auth/login.html" %}
-              
-              <div class="text-center mt-3">
-                  <a href="{% url 'ecommerce_coverde:login' %}" class="text-decoration-none">
-                      <i class="fas fa-arrow-left me-2"></i>Voltar
-                  </a>
-              </div>
-          </div>
-          
-          <div class="text-center mt-3 text-muted small">
-              <p>© 2025 Ecommerce-Coverde. Todos os direitos reservados.</p>
-          </div>
-      </div>
-  </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h2 class="mb-0">
+                        <i class="fas fa-tractor me-2"></i>Registo de Produtor
+                    </h2>
+                    <p class="mb-0">Preencha os dados para criar sua conta de produtor</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Coluna 1: Dados Pessoais -->
+                            <div class="col-md-6">
+                                <h4 class="mb-3 border-bottom pb-2">Dados Pessoais</h4>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Nome Completo *</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.first_name.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Email *</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.email.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Telefone *</label>
+                                    {{ form.telefone }}
+                                    <small class="text-muted">Formato: +351 912 345 678</small>
+                                    {% if form.telefone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.telefone.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Senha *</label>
+                                    {{ form.password1 }}
+                                    {% if form.password1.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.password1.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Confirmar Senha *</label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.password2.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Coluna 2: Dados Profissionais -->
+                            <div class="col-md-6">
+                                <h4 class="mb-3 border-bottom pb-2">Dados Profissionais</h4>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">NIF *</label>
+                                    {{ form.nif }}
+                                    <small class="text-muted">9 dígitos (ex: 123456789)</small>
+                                    {% if form.nif.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.nif.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Nome da Empresa/Quinta *</label>
+                                    {{ form.nome_empresa }}
+                                    {% if form.nome_empresa.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.nome_empresa.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Morada *</label>
+                                    {{ form.morada }}
+                                    {% if form.morada.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.morada.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Código Postal *</label>
+                                        {{ form.codigo_postal }}
+                                        {% if form.codigo_postal.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.codigo_postal.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Localidade *</label>
+                                        {{ form.localidade }}
+                                        {% if form.localidade.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.localidade.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Foto de Perfil</label>
+                                    {{ form.imagem_perfil }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Termos e Condições -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="form-check mb-3">
+                                {{ form.termos_condicoes }}
+                                <label class="form-check-label" for="{{ form.termos_condicoes.id_for_label }}">
+                                    Li e aceito os <a href="#" data-bs-toggle="modal" data-bs-target="#termosModal">Termos e Condições</a> *
+                                </label>
+                                {% if form.termos_condicoes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.termos_condicoes.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg py-3">
+                                    <i class="fas fa-user-plus me-2"></i>Criar Conta de Produtor
+                                </button>
+                                <a href="{% url 'ecommerce_coverde:registration_choice' %}" class="btn btn-outline-secondary">
+                                    Voltar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Termos e Condições -->
+<div class="modal fade" id="termosModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Termos e Condições</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Conteúdo dos termos e condições -->
+                <p>Texto dos termos e condições aqui...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

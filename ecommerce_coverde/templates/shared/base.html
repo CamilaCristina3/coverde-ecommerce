@@ -16,12 +16,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" id="main-css">
-    <script>
-    document.getElementById('main-css').onerror = function() {
-        this.href = "{% static 'css/fallback.css' %}";
-    };
-    </script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-light">
@@ -69,9 +64,11 @@
                     <ul class="dropdown-menu" aria-labelledby="produtosDropdown">
                         <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:listagem-produto' %}">Todos Produtos</a></li>
                         <li><hr class="dropdown-divider"></li>
+                        {% if categorias %}  <!-- Adicionada verificação para evitar erros -->
                         {% for categoria in categorias %}
                         <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:produto-por-categoria' categoria.slug %}">{{ categoria.nome }}</a></li>
                         {% endfor %}
+                        {% endif %}
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -88,8 +85,8 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:perfil' %}">Perfil</a></li>
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:pedido-list' %}">Meus Pedidos</a></li>
-                       <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:favoritos' %}">Favoritos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:pedido_list' %}">Meus Pedidos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:favorito_list' %}">Favoritos</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:logout' %}">Sair</a></li>
                     </ul>
@@ -129,8 +126,14 @@
     {% endif %}
 </div>
 
-<!-- Conteúdo Principal -->
+<!-- Conteúdo Principal com suporte para cover_image -->
 <main class="container mt-5 pt-4" id="main-content" tabindex="-1">
+    {% if cover_image %}  <!-- Adicionado para compatibilidade com a view atualizada -->
+    <div class="hero-image mb-4" style="background-image: url('{% static cover_image %}');">
+        <div class="hero-overlay"></div>
+    </div>
+    {% endif %}
+    
     {% block content %}{% endblock %}
 </main>
 
@@ -199,99 +202,15 @@
         
         <div class="text-center">
             <p class="mb-0 text-white-50 small">
-                &copy; 2023 COVERDE. Todos os direitos reservados.
+                &copy; {% now "Y" %} COVERDE. Todos os direitos reservados.
             </p>
         </div>
     </div>
 </footer>
 
-<!-- Tentativa principal via CDN -->
+<!-- Scripts principais -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Fallback local -->
-<script>
-    if (typeof bootstrap === 'undefined') {
-        const fallbackScript = document.createElement('script');
-        fallbackScript.src = "{% static 'js/bootstrap.bundle.min.js' %}";
-        document.head.appendChild(fallbackScript);
-    }
-</script>
-
-<!-- Sistema de Favoritos -->
-<script>
-function adicionarFavorito(produtoId) {
-    fetch(`/favoritos/adicionar/${produtoId}/`, {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Content-Type": "application/json",
-        },
-    })
-    .then(response => {
-        if (response.ok) {
-            // Sucesso, atualize a interface se necessário
-            console.log('Produto adicionado aos favoritos!');
-        } else {
-            console.error('Erro ao adicionar favorito.');
-        }
-    })
-    .catch(error => {
-        console.error('Erro na requisição:', error);
-    });
-}
-
-
-function showToast(message, type) {
-    const toastContainer = document.getElementById('toast-container');
-    const toastEl = document.createElement('div');
-    toastEl.className = `toast show align-items-center text-white bg-${type} border-0`;
-    toastEl.setAttribute('role', 'alert');
-    toastEl.setAttribute('aria-live', 'assertive');
-    toastEl.setAttribute('aria-atomic', 'true');
-    toastEl.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">
-                ${message}
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar notificação"></button>
-        </div>
-    `;
-    toastContainer.appendChild(toastEl);
-    
-    // Remove automaticamente após 5 segundos
-    setTimeout(() => {
-        toastEl.remove();
-    }, 5000);
-}
-</script>
-
-<!-- Sistema de Notificações -->
-{% if user.is_authenticated %}
-<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
-
-<script>
-const notificationSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/notificacoes/'
-);
-
-notificationSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    showToast(data.message, data.type || "info");
-};
-
-notificationSocket.onclose = function(e) {
-    if (e.wasClean) {
-        console.log('Conexão de notificação fechada limpa');
-    } else {
-        console.error('Notificação socket fechada inesperadamente');
-    }
-};
-
-notificationSocket.onerror = function(error) {
-    console.error('Erro na conexão de notificação:', error);
-};
-</script>
-{% endif %}
+<script src="{% static 'js/base.js' %}"></script>
 
 {% block extra_js %}{% endblock %}
 </body>

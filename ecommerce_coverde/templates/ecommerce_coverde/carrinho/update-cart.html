@@ -1,0 +1,17 @@
+{% if success %}
+{
+    "success": true,
+    "cart_total": "{{ cart_total|floatformat:2 }}",
+    "item_subtotal": "{{ item_subtotal|floatformat:2 }}",
+    "total_items": {{ total_items }},
+    {% if shipping_cost is not None %}
+    "shipping_cost": "{{ shipping_cost|floatformat:2 }}",
+    {% endif %}
+    "message": "Carrinho atualizado com sucesso"
+}
+{% else %}
+{
+    "success": false,
+    "error": "{{ error }}"
+}
+{% endif %}

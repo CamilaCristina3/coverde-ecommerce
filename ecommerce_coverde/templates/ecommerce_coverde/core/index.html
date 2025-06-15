@@ -23,7 +23,7 @@
     <div class="row g-3">
         {% for categoria in categorias %}
         <div class="col-6 col-md-3 col-lg-2">
-            <a href="{% url 'ecommerce_coverde:lista-produtos' %}?categoria={{ categoria.id }}" 
+            <a href="{% url 'ecommerce_coverde:listagem-produto' %}?categoria={{ categoria.id }}" 
                class="text-decoration-none text-dark category-link">
                 <div class="card h-100 border-0 shadow-sm hover-effect">
                     <div class="card-body text-center d-flex flex-column justify-content-center">

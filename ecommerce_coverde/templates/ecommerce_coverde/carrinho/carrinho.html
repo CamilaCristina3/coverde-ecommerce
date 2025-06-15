@@ -1,0 +1,187 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Carrinho de Compras - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Seu Carrinho</h1>
+    
+    {% if carrinho_vazio %}
+        <div class="alert alert-info">
+            <i class="fas fa-shopping-cart me-2"></i>
+            Seu carrinho está vazio. 
+            <a href="{% url 'ecommerce_coverde:listagem-produto' %}" class="alert-link">
+                Continue comprando
+            </a>
+        </div>
+    {% else %}
+        <form method="post" action="{% url 'ecommerce_coverde:update-cart' %}" id="cart-form">
+            {% csrf_token %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 40%">Produto</th>
+                            <th class="text-end">Preço</th>
+                            <th class="text-center">Quantidade</th>
+                            <th class="text-end">Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in itens %}
+                        <tr class="cart-item" data-product-id="{{ item.produto.id }}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if item.imagem_url %}
+                                    <img src="{{ item.imagem_url }}" 
+                                         alt="{{ item.produto.nome }}" 
+                                         class="img-thumbnail me-3" 
+                                         style="width: 80px; height: 80px; object-fit: cover;"
+                                         loading="lazy">
+                                    {% endif %}
+                                    <div>
+                                        <h5 class="mb-1">{{ item.produto.nome }}</h5>
+                                        <small class="text-muted">{{ item.produto.categoria.nome }}</small>
+                                        {% if item.max_estoque and item.quantidade > item.max_estoque %}
+                                        <div class="text-danger small mt-1">
+                                            Quantidade máxima disponível: {{ item.max_estoque }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-end align-middle">
+                                <span class="product-price">€{{ item.produto.preco }}</span> 
+                                <small class="text-muted">/{{ item.unidade }}</small>
+                            </td>
+                            <td class="align-middle">
+                                <div class="input-group mx-auto" style="width: 120px;">
+                                    <label for="quantity_{{ item.produto.id }}" class="visually-hidden">Quantidade</label>
+                                    <input type="number" 
+                                           id="quantity_{{ item.produto.id }}"
+                                           name="quantidade_{{ item.produto.id }}" 
+                                           value="{{ item.quantidade }}" 
+                                           min="1" 
+                                           max="{{ item.max_estoque|default:'' }}" 
+                                           class="form-control text-center quantity-input"
+                                           data-product-id="{{ item.produto.id }}"
+                                           {% if item.max_estoque %}data-max-stock="{{ item.max_estoque }}"{% endif %}>
+                                </div>
+                            </td>
+                            <td class="text-end align-middle">
+                                <span class="fw-bold item-subtotal">€{{ item.subtotal }}</span>
+                            </td>
+                            <td class="text-end align-middle">
+                                <a href="{% url 'ecommerce_coverde:remove-from-cart' item.produto.id %}" 
+                                   class="btn btn-sm btn-outline-danger remove-item" 
+                                   data-product-id="{{ item.produto.id }}"
+                                   data-product-name="{{ item.produto.nome }}"
+                                   aria-label="Remover item">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mb-4">
+                <a href="{% url 'ecommerce_coverde:listagem-produto' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Continuar comprando
+                </a>
+                <div>
+                    <button type="submit" class="btn btn-primary me-2" id="update-cart-btn">
+                        <i class="fas fa-sync-alt me-2"></i>Atualizar carrinho
+                    </button>
+                    <a href="{% url 'ecommerce_coverde:clear-cart' %}" class="btn btn-outline-danger" id="clear-cart-btn">
+                        <i class="fas fa-trash me-2"></i>Limpar tudo
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Resumo do Pedido</h5>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal (<span id="total-items">{{ total_itens }}</span> itens)</span>
+                            <span class="cart-subtotal">€{{ total }}</span>
+                        </div>
+                        
+                        {% if frete_gratis %}
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Frete</span>
+                            <span>Grátis</span>
+                        </div>
+                        {% else %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Frete</span>
+                            <span class="shipping-cost">A calcular</span>
+                        </div>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>Total</span>
+                            <span class="cart-total">€{{ total }}</span>
+                        </div>
+                        
+                        <a href="{% url 'ecommerce_coverde:checkout' %}" class="btn btn-success w-100 mt-4 py-3" id="checkout-btn">
+                            <i class="fas fa-lock me-2"></i>Finalizar Compra
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Formatar valores monetários
+    const formatCurrency = (value) => `€${parseFloat(value).toFixed(2)}`;
+    
+    // Estado de carregamento
+    const setLoading = (loading) => {
+        $('.quantity-input, .remove-item, #clear-cart-btn, #update-cart-btn').prop('disabled', loading);
+        if (loading) {
+            $('#checkout-btn').prepend('<span class="spinner-border spinner-border-sm me-2"></span>');
+        } else {
+            $('#checkout-btn').find('.spinner-border').remove();
+        }
+    };
+
+    // Confirmar limpeza do carrinho
+    $('#clear-cart-btn').on('click', function(e) {
+        if (!confirm('Deseja esvaziar todo o carrinho?')) {
+            e.preventDefault();
+        } else {
+            setLoading(true);
+        }
+    });
+
+    // Confirmar remoção de item
+    $('.remove-item').on('click', function(e) {
+        if (!confirm('Tem certeza que deseja remover este item do carrinho?')) {
+            e.preventDefault();
+        } else {
+            setLoading(true);
+        }
+    });
+
+    // Prevenir envio duplo do formulário
+    $('#cart-form').on('submit', function() {
+        setLoading(true);
+    });
+});
+</script>
+{% endblock %}

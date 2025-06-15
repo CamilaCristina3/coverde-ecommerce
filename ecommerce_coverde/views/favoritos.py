@@ -1,16 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.contrib import messages
 from ..models import Favorito, Produto
 
-class FavoritosListView(ListView):
+class FavoritosListView(LoginRequiredMixin, ListView):
     model = Favorito
-    template_name = 'favoritos/list.html'
+    template_name = 'ecommerce_coverde/favoritos/favorito_list.html'  # <-- CORRETO
     context_object_name = 'favoritos'
 
+
     def get_queryset(self):
-        return Favorito.objects.filter(usuario=self.request.user).select_related('produto')
+        return Favorito.objects.filter(utilizador=self.request.user).select_related('produto')
 
 @login_required
 def adicionar_favorito(request, produto_id):
@@ -28,6 +31,6 @@ def adicionar_favorito(request, produto_id):
 @login_required
 def remover_favorito(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
-    Favorito.objects.filter(usuario=request.user, produto=produto).delete()
+    Favorito.objects.filter(utilizador=request.user, produto=produto).delete()
     messages.success(request, f"'{produto.nome}' foi removido dos seus favoritos!")
     return redirect(request.META.get('HTTP_REFERER', 'favoritos'))

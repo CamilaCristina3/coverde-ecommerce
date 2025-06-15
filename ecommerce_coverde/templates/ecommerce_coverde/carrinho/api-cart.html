@@ -1,0 +1,24 @@
+{% if success %}
+{
+    "success": true,
+    "items": [
+        {% for item in items %}
+        {
+            "product_id": {{ item.produto.id }},
+            "name": "{{ item.produto.nome }}",
+            "price": "{{ item.produto.preco|floatformat:2 }}",
+            "quantity": {{ item.quantidade }},
+            "subtotal": "{{ item.subtotal|floatformat:2 }}",
+            "image_url": "{{ item.produto.imagem_url|default:'' }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "cart_total": "{{ total|floatformat:2 }}",
+    "total_items": {{ total_items }}
+}
+{% else %}
+{
+    "success": false,
+    "error": "{{ error }}"
+}
+{% endif %}

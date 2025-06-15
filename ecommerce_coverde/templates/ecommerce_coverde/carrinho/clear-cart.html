@@ -1,0 +1,11 @@
+{% if success %}
+{
+    "success": true,
+    "message": "Carrinho esvaziado com sucesso"
+}
+{% else %}
+{
+    "success": false,
+    "error": "{{ error }}"
+}
+{% endif %}
