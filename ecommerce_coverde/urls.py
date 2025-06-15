@@ -136,6 +136,7 @@ path('categorias/<int:pk>/excluir/', CategoriaDeleteView.as_view(), name='catego
     path('carrinho/adicionar/<int:produto_id>/', AdicionarAoCarrinhoView.as_view(), name='add_to_cart'),
     path('carrinho/remover/<int:produto_id>/', RemoverDoCarrinhoView.as_view(), name='remove-from-cart'),
     path('carrinho/atualizar/', AtualizarCarrinhoView.as_view(), name='update-cart'),
+   
     
     # ===== CHECKOUT =====
     path('checkout/', CheckoutView.as_view(), name='checkout'),
