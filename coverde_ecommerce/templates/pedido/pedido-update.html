@@ -1,0 +1,42 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Editar Pedido #{{ pedido.id }} - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Editar Pedido #{{ pedido.id }}</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Estado do Pedido</h5>
+            </div>
+            <div class="card-body">
+                {{ form.estado }}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Informações de Envio</h5>
+            </div>
+            <div class="card-body">
+                {{ form.morada_entrega }}
+                {{ form.codigo_rastreio }}
+            </div>
+        </div>
+
+        <div class="text-end">
+            <a href="{% url 'ecommerce_coverde:pedido_list' %}" class="btn btn-outline-secondary me-2">
+                Cancelar
+            </a>
+            <button type="submit" class="btn btn-success px-4">
+                <i class="bi bi-save me-2"></i>Guardar Alterações
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

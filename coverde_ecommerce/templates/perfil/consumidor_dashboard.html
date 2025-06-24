@@ -1,0 +1,154 @@
+{% extends "shared/base.html" %}
+{% load static humanize %}
+
+{% block title %}Área do Consumidor - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-4">
+            <!-- Perfil Resumido -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Meu Perfil</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if user.imagem_perfil %}
+                    <img src="{{ user.imagem_perfil.url }}" 
+                         class="rounded-circle mb-3" 
+                         width="120" height="120"
+                         alt="Foto de perfil">
+                    {% else %}
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                         style="width: 120px; height: 120px;">
+                        <i class="fas fa-user text-muted fa-3x"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+                    
+                    <a href="{% url 'ecommerce_coverde:perfil_edit' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-edit me-1"></i>Editar Perfil
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Menu Rápido -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Ações Rápidas</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'ecommerce_coverde:produto_list' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-basket me-2"></i>Comprar Produtos
+                    </a>
+                    <a href="{% url 'ecommerce_coverde:pedido_list' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-clipboard-list me-2"></i>Meus Pedidos
+                    </a>
+                    <a href="{% url 'ecommerce_coverde:favorito_list' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart me-2"></i>Favoritos
+                    </a>
+                    <a href="{% url 'ecommerce_coverde:perfil' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-cog me-2"></i>Configurações
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <!-- Últimos Pedidos -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Meus Pedidos Recentes</h5>
+                    <a href="{% url 'ecommerce_coverde:pedido_list' %}" class="btn btn-sm btn-outline-secondary">
+                        Ver Todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if pedidos_recentes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nº Pedido</th>
+                                    <th>Data</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pedido in pedidos_recentes %}
+                                <tr>
+                                    <td>#{{ pedido.id }}</td>
+                                    <td>{{ pedido.data_criacao|date:"d/m/Y" }}</td>
+                                    <td>€ {{ pedido.total|intcomma }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if pedido.status == 'pendente' %}warning{% elif pedido.status == 'enviado' %}info{% else %}success{% endif %}">
+                                            {{ pedido.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'ecommerce_coverde:pedido_detail' pedido.id %}" class="btn btn-sm btn-outline-primary">
+                                            Detalhes
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        Você ainda não realizou nenhum pedido.
+                        <a href="{% url 'ecommerce_coverde:produto_list' %}" class="alert-link">
+                            Comece a comprar agora!
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Produtos Recomendados -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Produtos Recomendados</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for produto in produtos_recomendados %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <img src="{{ produto.imagem.url }}" 
+                                     class="card-img-top" 
+                                     alt="{{ produto.nome }}"
+                                     style="height: 120px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ produto.nome }}</h6>
+                                    <p class="card-text text-success fw-bold">
+                                        € {{ produto.preco|intcomma }}
+                                    </p>
+                                </div>
+                                <div class="card-footer bg-white border-0">
+                                    <a href="{% url 'ecommerce_coverde:detalhe_produto' produto.slug %}" 
+                                       class="btn btn-sm btn-outline-success w-100">
+                                        Ver Detalhes
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-warning mb-0">
+                                Nenhum produto recomendado no momento.
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

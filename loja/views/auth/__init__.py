@@ -1,1 +1,0 @@
-__all__ = ['IndexView', 'CustomLoginView', ...]  # Liste todas as views

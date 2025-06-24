@@ -1,0 +1,153 @@
+{% extends "shared/base.html" %}
+{% load custom_tags %} 
+{% load static cache %}
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">Nossos Produtos</h2>
+    
+    {% if not produtos %}
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle me-2"></i>Nenhum produto disponível nesta categoria.
+    </div>
+    {% else %}
+    <div class="row g-4">
+        {% for produto in produtos %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm product-card">
+                <!-- Imagem com fallback robusto -->
+                <div class="product-image-container position-relative">
+                    {% if produto.imagem %}
+                    <img src="{{ produto.imagem.url }}" class="card-img-top" 
+                         alt="{{ produto.nome }}" loading="lazy">
+                    {% else %}
+                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                        <i class="fas fa-box-open fa-4x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    {% if produto.destaque %}
+                    <span class="position-absolute top-0 start-0 m-2 badge bg-warning text-dark">
+                        <i class="fas fa-star me-1"></i>Destaque
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ produto.nome|truncatechars:25 }}</h5>
+                    
+                    {% if produto.categoria %}
+                    <p class="text-muted small mb-2">
+                        <i class="fas fa-tag me-1"></i>{{ produto.categoria.nome }}
+                    </p>
+                    {% endif %}
+                    
+                    <p class="card-text mb-2">
+                        <span class="fw-bold h5 text-success">€ {{ produto.preco }}</span>
+                        <small class="text-muted">/{{ produto.get_unidade_display }}</small>
+                    </p>
+                    
+                    {% if produto.certificado_biologico %}
+                    <span class="badge bg-success text-white mb-2">
+                        <i class="fas fa-leaf me-1"></i>Biológico
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 pt-0 d-flex flex-column gap-2">
+                    {% with valid_slug=produto.slug|slugify %}
+                    <a href="{% url 'ecommerce_coverde:detalhe-produto' valid_slug %}" 
+                       class="btn btn-success w-100 stretched-link">
+                        <i class="fas fa-eye me-1"></i>Ver Detalhes
+                    </a>
+                    {% endwith %}
+                    
+                    <!-- Adicionar ao Carrinho -->
+                   <form method="post" action="{% url 'ecommerce_coverde:add_to_cart' produto.id %}">
+    {% csrf_token %}
+    <div class="input-group mb-3">
+        <input type="number" name="quantidade" value="1" min="1" 
+               max="{{ produto.estoque }}" class="form-control">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-cart-plus me-1"></i> Adicionar
+        </button>
+    </div>
+</form>
+
+                    <!-- Adicionar aos Favoritos -->
+                    <form method="post" action="{% url 'ecommerce_coverde:adicionar_favorito' produto.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-heart me-1"></i>Favoritar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hover-effect:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .product-card:hover {
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .product-image-container {
+        height: 180px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+    }
+
+    .product-image-container img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image-container img {
+        transform: scale(1.05);
+    }
+
+    .category-link:hover {
+        text-decoration: none;
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('a[href*="detalhe-produto"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.getAttribute('href').includes('None')) {
+                e.preventDefault();
+                alert('Produto indisponível no momento.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

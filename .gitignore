@@ -1,48 +1,62 @@
-# Python
+# === Python ===
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.so
-*.egg
+*.pyc
+*.pdb
 *.egg-info/
-dist/
-build/
-*.manifest
-*.spec
-
-
-# Django
 *.log
-local_settings.py
+*.pot
+
+# === Virtual environment ===
+venv/
+ENV/
+env/
+.venv/
+.ENV/
+.env/
+
+# === Django ===
+*.sqlite3
 db.sqlite3
 media/
 staticfiles/
+static_root/
+*.bak
+*.swp
 
-# Environments
+# === Configuração Django (segurança) ===
 .env
 .env.*
-venv/
-env/
-.venv/
 
-# IDEs
+# === IDEs ===
 .vscode/
 .idea/
-*.swp
-*.swo
-*.bak
 
-# OS
+# === MacOS / Linux ===
 .DS_Store
 Thumbs.db
 
-# MySQL/MariaDB dumps
-*.sql
+# === Testes / relatórios ===
+coverage.xml
+*.cover
+*.py,cover
+.cache
+nosetests.xml
+test-results/
 
-# Google credentials
-*.json
+# === MyPy / Linters ===
+.mypy_cache/
+.dmypy.json
+.pytype/
 
-# Migrations (opcional, se não quiser versionar)
-**/migrations/*.py
-!**/migrations/__init__.py
+# === Outros ===
+*.tgz
+*.gz
+*.zip
+*.tar
+*.log
+npm-debug.log
+yarn-debug.log
+yarn-error.log

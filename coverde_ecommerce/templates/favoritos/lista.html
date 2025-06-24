@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Favoritos{% endblock %}
+{% block content %}
+<h1 class="mb-4">Os seus produtos favoritos</h1>
+{% if favoritos %}
+<ul class="list-group">
+    {% for favorito in favoritos %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="{% url 'ecommerce_coverde:produto_detalhe' favorito.produto.slug %}">{{ favorito.produto.nome }}</a>
+        <span class="badge bg-success">{{ favorito.criado_em|date:"d/m/Y" }}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Não tem produtos marcados como favoritos.</p>
+{% endif %}
+{% endblock %}

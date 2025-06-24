@@ -1,0 +1,84 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Entrar - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
+    <div class="text-center mb-4">
+      <img src="{% static 'css/images/logo.png' %}" alt="COVERDE" style="height: 50px;" class="mb-3">
+      <h2 class="text-success mb-0">Entrar na COVERDE</h2>
+      <small class="text-muted">Acesso à sua conta agrícola</small>
+    </div>
+
+    {% if form.errors %}
+      <div class="alert alert-danger text-center" role="alert">
+        Email ou senha incorretos. Por favor, tente novamente.
+      </div>
+    {% endif %}
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="{% url 'coverde_ecommerce:login' %}" novalidate>
+      {% csrf_token %}
+      
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Email</label>
+        <input type="email" 
+               name="username"  {# Corrigido de 'usarname' para 'username' #}
+               id="id_username" 
+               class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+               required 
+               placeholder="nome@email.com"
+               value="{{ form.username.value|default:'' }}">
+        {% if form.username.errors %}
+          <div class="invalid-feedback">
+            {{ form.username.errors.0 }}
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Senha</label>
+        <input type="password" 
+               name="password" 
+               id="id_password" 
+               class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+               required 
+               placeholder="••••••••">
+        {% if form.password.errors %}
+          <div class="invalid-feedback">
+            {{ form.password.errors.0 }}
+          </div>
+        {% endif %}
+        <div class="text-end mt-2">
+          <a href="{% url 'coverde_ecommerce:password_reset' %}" class="text-decoration-none small text-muted">Esqueceu a senha?</a>
+        </div>
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+        <label class="form-check-label" for="remember_me">Manter-me conectado</label>
+      </div>
+      
+      <button type="submit" class="btn btn-success w-100 rounded-pill py-2">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+      </button>
+    </form>
+
+    <div class="text-center mt-4 pt-3 border-top">
+      <p class="small text-muted mb-2">Ainda não tem conta?</p>
+      <a href="{% url 'coverde_ecommerce:registration_choice' %}" class="text-decoration-none">
+        Criar nova conta
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

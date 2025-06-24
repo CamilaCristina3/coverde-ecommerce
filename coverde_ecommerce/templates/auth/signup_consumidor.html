@@ -1,0 +1,161 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Registo de Consumidor - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h2 class="mb-0">
+                        <i class="fas fa-shopping-basket me-2"></i>Registo de Consumidor
+                    </h2>
+                    <p class="mb-0">Crie sua conta para começar a comprar</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h4 class="mb-3 border-bottom pb-2">Dados Pessoais</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nome *</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.first_name.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Sobrenome</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.email.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Telefone</label>
+                            {{ form.telefone }}
+                            <small class="text-muted">Formato: +351 912 345 678</small>
+                            {% if form.telefone.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.telefone.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Senha *</label>
+                            {{ form.password1 }}
+                            <div class="form-text">
+                                <strong>A senha deve conter:</strong>
+                                <ul class="mb-0">
+                                    <li>Mínimo de 8 caracteres</li>
+                                    <li>Pelo menos 1 letra maiúscula</li>
+                                    <li>Pelo menos 1 número</li>
+                                </ul>
+                            </div>
+                            {% if form.password1.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password1.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar Senha *</label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.password2.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h4 class="mb-3 mt-4 border-bottom pb-2">Morada</h4>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Morada</label>
+                            {{ form.morada }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Código Postal</label>
+                                {{ form.codigo_postal }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Localidade</label>
+                                {{ form.localidade }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Foto de Perfil</label>
+                            {{ form.imagem_perfil }}
+                        </div>
+                        
+                        <!-- Termos e Condições -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="form-check mb-3">
+                                {{ form.termos_condicoes }}
+                                <label class="form-check-label" for="{{ form.termos_condicoes.id_for_label }}">
+                                    Li e aceito os <a href="#" data-bs-toggle="modal" data-bs-target="#termosModal">Termos e Condições</a> *
+                                </label>
+                                {% if form.termos_condicoes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.termos_condicoes.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg py-3">
+                                    <i class="fas fa-user-plus me-2"></i>Criar Conta
+                                </button>
+                                <a href="{% url 'ecommerce_coverde:registration_choice' %}" class="btn btn-outline-secondary">
+                                    Voltar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Termos e Condições -->
+<div class="modal fade" id="termosModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Termos e Condições</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Conteúdo dos termos e condições -->
+                <p>Texto dos termos e condições aqui...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

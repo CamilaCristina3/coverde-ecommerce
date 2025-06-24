@@ -1,0 +1,115 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Finalizar Compra - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-7">
+            <h2 class="mb-4">Finalizar Compra</h2>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Morada de Entrega</h5>
+                </div>
+                <div class="card-body">
+                    <form id="morada-form">
+                        {% csrf_token %}
+                        {{ form_morada.as_p }}
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Método de Pagamento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="metodo_pagamento" 
+                               id="mbway" value="mbway" checked>
+                        <label class="form-check-label" for="mbway">
+                            <i class="bi bi-phone"></i> MBWay
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="metodo_pagamento" 
+                               id="multibanco" value="multibanco">
+                        <label class="form-check-label" for="multibanco">
+                            <i class="bi bi-credit-card"></i> Multibanco
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="metodo_pagamento" 
+                               id="paypal" value="paypal">
+                        <label class="form-check-label" for="paypal">
+                            <i class="bi bi-paypal"></i> PayPal
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Resumo da Encomenda</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in carrinho.itens.all %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>{{ item.produto.nome }} ({{ item.quantidade }})</span>
+                        <span>{{ item.subtotal }} €</span>
+                    </div>
+                    {% endfor %}
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span>{{ carrinho.subtotal }} €</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Portes</span>
+                        <span>{{ carrinho.portes }} €</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Total</span>
+                        <span>{{ carrinho.total }} €</span>
+                    </div>
+
+                    <button type="button" id="finalizar-compra" class="btn btn-success w-100 mt-4">
+                        <i class="bi bi-check-circle me-2"></i>Confirmar Encomenda
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('finalizar-compra').addEventListener('click', function() {
+    const moradaForm = document.getElementById('morada-form')
+    const metodoPagamento = document.querySelector('input[name="metodo_pagamento"]:checked').value
+    
+    fetch('/finalizar-compra/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            'morada': Object.fromEntries(new FormData(moradaForm)),
+            'metodo_pagamento': metodoPagamento
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/checkout/sucesso/'
+        }
+    })
+})
+</script>
+{% endblock %}

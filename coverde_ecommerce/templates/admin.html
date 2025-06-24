@@ -1,0 +1,11 @@
+{% extends "shared/base.html" %}
+{% load custom_tags %} 
+{% load static %}
+
+{% load log %}
+{% get_admin_log 10 as admin_log %}
+<ul>
+    {% for entry in admin_log %}
+        <li>{{ entry }}</li>
+    {% endfor %}
+</ul>

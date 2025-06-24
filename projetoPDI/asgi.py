@@ -1,17 +1,21 @@
-# asgi.py
+"""
+ASGI config for projetoPDI project.
+
+It exposes the ASGI callable as a module-level variable named ``application``.
+
+For more information, see:
+https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
+"""
+
 import os
-import django
-from channels.routing import ProtocolTypeRouter, URLRouter
+from pathlib import Path
+from dotenv import load_dotenv
 from django.core.asgi import get_asgi_application
-from chat.routing import websocket_urlpatterns
-from loja.middleware import CustomAuthMiddleware
+
+# Carrega variáveis do .env no ambiente (importante fora de Docker)
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'projetoPDI.settings')
-django.setup()
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": CustomAuthMiddleware(
-        URLRouter(websocket_urlpatterns)
-    ),
-})
+application = get_asgi_application()

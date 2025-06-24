@@ -1,0 +1,205 @@
+{% extends "shared/base.html" %}
+{% load static humanize %}
+
+{% block title %}Dashboard do Produtor - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dashboard do Produtor</h1>
+    
+    <!-- Cards de Estatísticas -->
+    <div class="row mt-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-success border-3 h-100 py-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-xs font-weight-bold text-success mb-1">
+                                Produtos Ativos
+                            </div>
+                            <div class="h5 mb-0">{{ produtos_count }}</div>
+                        </div>
+                        <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-warning border-3 h-100 py-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-xs font-weight-bold text-warning mb-1">
+                                Pedidos Pendentes
+                            </div>
+                            <div class="h5 mb-0">{{ pedidos_pendentes }}</div>
+                        </div>
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-primary border-3 h-100 py-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-xs font-weight-bold text-primary mb-1">
+                                Total de Vendas
+                            </div>
+                            <div class="h5 mb-0">€ {{ total_vendas|intcomma }}</div>
+                        </div>
+                        <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-info border-3 h-100 py-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-xs font-weight-bold text-info mb-1">
+                                Avaliação Média
+                            </div>
+                            <div class="h5 mb-0">4.8/5.0</div>
+                        </div>
+                        <i class="fas fa-star fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Seção de Ações Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Ações Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'loja:adicionar_produto' %}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Adicionar Produto
+                        </a>
+                        <a href="{% url 'loja:produto_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-boxes me-2"></i>Gerir Produtos
+                        </a>
+                        <a href="{% url 'loja:pedido_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-clipboard-list me-2"></i>Ver Pedidos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Últimos Pedidos -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Últimos Pedidos</h5>
+                    <a href="{% url 'loja:pedido_list' %}" class="btn btn-sm btn-outline-secondary">
+                        Ver Todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if pedidos_recentes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nº Pedido</th>
+                                    <th>Data</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pedido in pedidos_recentes %}
+                                <tr>
+                                    <td><a href="{% url 'loja:pedido_detail' pedido.id %}">#{{ pedido.id }}</a></td>
+                                    <td>{{ pedido.data_criacao|date:"d/m/Y" }}</td>
+                                    <td>€ {{ pedido.total|intcomma }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if pedido.status == 'pendente' %}warning{% elif pedido.status == 'enviado' %}info{% else %}success{% endif %}">
+                                            {{ pedido.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        Nenhum pedido recente encontrado.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Produtos com Estoque Baixo -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Estoque Baixo</h5>
+                    <a href="{% url 'loja:produto_list' %}?stock__lt=5" class="btn btn-sm btn-outline-secondary">
+                        Ver Todos
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if produtos_estoque_baixo %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Estoque</th>
+                                    <th>Status</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produto in produtos_estoque_baixo %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'loja:editar_produto' produto.id %}">
+                                            {{ produto.nome }}
+                                        </a>
+                                    </td>
+                                    <td>{{ produto.stock }}</td>
+                                    <td>
+                                        {% if produto.stock < 3 %}
+                                        <span class="badge bg-danger">Crítico</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Atenção</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'loja:editar_produto' produto.id %}" class="btn btn-sm btn-outline-primary">
+                                            Repor
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success mb-0">
+                        Todos os produtos com estoque suficiente.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

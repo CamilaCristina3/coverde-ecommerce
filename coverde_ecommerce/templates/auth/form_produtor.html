@@ -1,0 +1,42 @@
+<form method="post" class="mt-3">
+    {% csrf_token %}
+    
+    <!-- Email -->
+    <div class="mb-4">
+        <h3 class="h5">Correio eletrônico *</h3>
+        {{ form.email }}
+        <div class="form-text text-muted">Será usado para login</div>
+    </div>
+    
+    <!-- Password -->
+    <div class="mb-4">
+        <h3 class="h5">Palavra-passe *</h3>
+        {{ form.password1 }}
+        <div class="form-text text-muted">
+            A palavra-passe deve conter:<br>
+            - Mínimo 8 caracteres<br>
+            - Pelo menos uma letra maiúscula<br>
+            - Pelo menos um número<br>
+            - Caracteres especiais permitidos
+        </div>
+    </div>
+    
+    <!-- Confirm Password -->
+    <div class="mb-4">
+        <h3 class="h5">Confirmar palavra-passe *</h3>
+        {{ form.password2 }}
+    </div>
+    
+    <!-- Checkbox -->
+    <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" id="terms" required>
+        <label class="form-check-label" for="terms">
+            Concordo com os <strong>termos e condições</strong> *
+        </label>
+    </div>
+    
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-success w-100 py-2">
+        Criar Conta
+    </button>
+</form>

@@ -1,0 +1,65 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Pedido #{{ pedido.id }} - COVERDE{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Pedido #{{ pedido.id }}</h2>
+        <span class="badge bg-{{ pedido.get_estado_badge }} fs-6">
+            {{ pedido.get_estado_display }}
+        </span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Produtos</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in pedido.itens.all %}
+                    <div class="d-flex mb-3 border-bottom pb-3">
+                        <img src="{{ item.produto.imagem.url }}" width="80" class="me-3">
+                        <div class="flex-grow-1">
+                            <h6>{{ item.produto.nome }}</h6>
+                            <div class="d-flex justify-content-between">
+                                <span>{{ item.quantidade }} x {{ item.preco_unitario }} €</span>
+                                <strong>{{ item.subtotal }} €</strong>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Resumo</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-6">Data:</dt>
+                        <dd class="col-6 text-end">{{ pedido.data_pedido|date:"d/m/Y H:i" }}</dd>
+
+                        <dt class="col-6">Subtotal:</dt>
+                        <dd class="col-6 text-end">{{ pedido.subtotal }} €</dd>
+
+                        <dt class="col-6">Portes:</dt>
+                        <dd class="col-6 text-end">{{ pedido.portes }} €</dd>
+
+                        <dt class="col-6">Total:</dt>
+                        <dd class="col-6 text-end fw-bold">{{ pedido.total }} €</dd>
+                    </dl>
+
+                    <h6 class="mt-4">Morada de Entrega</h6>
+                    <p>{{ pedido.morada_entrega }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% if categorias %}
+  {% for categoria in categorias %}
+    {% if categoria.slug %}
+    <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:produto-por-categoria' categoria.slug %}">
+      {{ categoria.nome|default:categoria.slug }}
+    </a></li>
+    {% endif %}
+  {% endfor %}
+{% else %}
+  <li><span class="dropdown-item text-muted">Nenhuma categoria disponível</span></li>
+{% endif %}
