@@ -37,7 +37,7 @@ class ResendVerificationView(FormView):
             send_mail(
                 'Confirmação de E-mail - COVERDE',
                 f'Clique no link para verificar seu e-mail: {verification_url}',
-                'noreply@coverde.com.br',
+                'noreply@coverde.com.pt',
                 [email],
                 fail_silently=False,
             )

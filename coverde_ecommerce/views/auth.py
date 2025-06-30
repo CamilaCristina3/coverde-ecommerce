@@ -4,11 +4,11 @@ from django.contrib import messages
 from django.views import View
 from django.urls import reverse
 
-# Importação correta dos formulários
-from  coverde_ecommerce.forms import LoginForm, ProdutorRegistrationForm, ConsumidorRegistrationForm
+from coverde_ecommerce.forms import LoginForm, ProdutorRegistrationForm, ConsumidorRegistrationForm
+
 
 class LoginView(View):
-    template_name = 'ecommerce_coverde/auth/login.html'
+    template_name = 'coverde_ecommerce/auth/login.html'
 
     def get(self, request):
         if request.user.is_authenticated:
@@ -33,15 +33,18 @@ class LoginView(View):
             return reverse('coverde_ecommerce:consumidor_dashboard')
         return reverse('coverde_ecommerce:index')
 
+
 def custom_logout(request):
     logout(request)
     messages.info(request, 'Você foi desconectado com sucesso.')
     return redirect('coverde_ecommerce:index')
 
+
 def registration_choice(request):
     if request.user.is_authenticated:
         return redirect('coverde_ecommerce:index')
     return render(request, 'coverde_ecommerce/auth/registration_choice.html')
+
 
 def signup_produtor(request):
     if request.user.is_authenticated:
@@ -58,6 +61,7 @@ def signup_produtor(request):
         form = ProdutorRegistrationForm()
     
     return render(request, 'coverde_ecommerce/auth/signup_produtor.html', {'form': form})
+
 
 def signup_consumidor(request):
     if request.user.is_authenticated:

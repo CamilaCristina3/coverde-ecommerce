@@ -34,15 +34,15 @@ class BaseRegistrationForm(UserCreationForm):
     )
     
     telefone = forms.CharField(
-        label="Telefone",
-        required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control form-control-lg',
-            'placeholder': '+351 912 345 678',
-            'pattern': '^(\+351)?[ ]?[9][1236][ ]?[0-9]{3}[ ]?[0-9]{3}$'
-        }),
-        help_text="Formato: +351 912 345 678"
-    )
+    label="Telefone",
+    required=False,
+    widget=forms.TextInput(attrs={
+        'class': 'form-control form-control-lg',
+        'placeholder': '+351 912 345 678',
+    }),
+    help_text="Pode incluir espaços e +351. Exemplo: +351 912 345 678"
+)
+
     
     password1 = forms.CharField(
         label="Criar Senha *",

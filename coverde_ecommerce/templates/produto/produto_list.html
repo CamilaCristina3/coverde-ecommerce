@@ -55,14 +55,14 @@
                 
                 <div class="card-footer bg-transparent border-0 pt-0 d-flex flex-column gap-2">
                     {% with valid_slug=produto.slug|slugify %}
-                    <a href="{% url 'ecommerce_coverde:detalhe-produto' valid_slug %}" 
+                    <a href="{% url 'coverde_ecommerce:detalhe-produto' valid_slug %}" 
                        class="btn btn-success w-100 stretched-link">
                         <i class="fas fa-eye me-1"></i>Ver Detalhes
                     </a>
                     {% endwith %}
                     
                     <!-- Adicionar ao Carrinho -->
-                   <form method="post" action="{% url 'ecommerce_coverde:add_to_cart' produto.id %}">
+                   <form method="post" action="{% url 'coverde_ecommerce:add_to_cart' produto.id %}">
     {% csrf_token %}
     <div class="input-group mb-3">
         <input type="number" name="quantidade" value="1" min="1" 
@@ -74,7 +74,7 @@
 </form>
 
                     <!-- Adicionar aos Favoritos -->
-                    <form method="post" action="{% url 'ecommerce_coverde:adicionar_favorito' produto.id %}">
+                    <form method="post" action="{% url 'coverde_ecommerce:adicionar_favorito' produto.id %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-secondary w-100">
                             <i class="fas fa-heart me-1"></i>Favoritar

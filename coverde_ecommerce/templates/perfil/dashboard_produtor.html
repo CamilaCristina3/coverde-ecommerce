@@ -74,7 +74,7 @@
         </div>
     </div>
     
-    <!-- Seção de Ações Rápidas -->
+    <!-- Ações Rápidas -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow">
@@ -83,13 +83,13 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="{% url 'loja:adicionar_produto' %}" class="btn btn-success">
+                        <a href="{% url 'coverde_ecommerce:adicionar_produto' %}" class="btn btn-success">
                             <i class="fas fa-plus me-2"></i>Adicionar Produto
                         </a>
-                        <a href="{% url 'loja:produto_list' %}" class="btn btn-outline-primary">
+                        <a href="{% url 'coverde_ecommerce:produtor_dashboard' %}" class="btn btn-outline-primary">
                             <i class="fas fa-boxes me-2"></i>Gerir Produtos
                         </a>
-                        <a href="{% url 'loja:pedido_list' %}" class="btn btn-outline-secondary">
+                        <a href="{% url 'coverde_ecommerce:pedido_list' %}" class="btn btn-outline-secondary">
                             <i class="fas fa-clipboard-list me-2"></i>Ver Pedidos
                         </a>
                     </div>
@@ -104,7 +104,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Últimos Pedidos</h5>
-                    <a href="{% url 'loja:pedido_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <a href="{% url 'coverde_ecommerce:pedido_list' %}" class="btn btn-sm btn-outline-secondary">
                         Ver Todos
                     </a>
                 </div>
@@ -123,7 +123,7 @@
                             <tbody>
                                 {% for pedido in pedidos_recentes %}
                                 <tr>
-                                    <td><a href="{% url 'loja:pedido_detail' pedido.id %}">#{{ pedido.id }}</a></td>
+                                    <td><a href="{% url 'coverde_ecommerce:pedido_detail' pedido.id %}">#{{ pedido.id }}</a></td>
                                     <td>{{ pedido.data_criacao|date:"d/m/Y" }}</td>
                                     <td>€ {{ pedido.total|intcomma }}</td>
                                     <td>
@@ -150,7 +150,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Estoque Baixo</h5>
-                    <a href="{% url 'loja:produto_list' %}?stock__lt=5" class="btn btn-sm btn-outline-secondary">
+                    <a href="{% url 'coverde_ecommerce:produtor_dashboard' %}?stock__lt=5" class="btn btn-sm btn-outline-secondary">
                         Ver Todos
                     </a>
                 </div>
@@ -170,7 +170,7 @@
                                 {% for produto in produtos_estoque_baixo %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'loja:editar_produto' produto.id %}">
+                                        <a href="{% url 'coverde_ecommerce:editar_produto' produto.id %}">
                                             {{ produto.nome }}
                                         </a>
                                     </td>
@@ -183,7 +183,7 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{% url 'loja:editar_produto' produto.id %}" class="btn btn-sm btn-outline-primary">
+                                        <a href="{% url 'coverde_ecommerce:editar_produto' produto.id %}" class="btn btn-sm btn-outline-primary">
                                             Repor
                                         </a>
                                     </td>

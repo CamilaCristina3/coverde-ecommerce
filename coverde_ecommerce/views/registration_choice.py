@@ -19,7 +19,7 @@ def signup_produtor(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Conta de produtor criada!')
-            return redirect('coverde_ecommerce:produtor_dashboard')
+            return redirect('coverde_ecommerce:dashboard_produtor')
     else:
         form = ProdutorRegistrationForm()
     
@@ -35,7 +35,7 @@ def signup_consumidor(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Conta de consumidor criada!')
-            return redirect('coverde_ecommerce:listagem-produto')
+            return redirect('coverde_ecommerce:produto_list')
     else:
         form = ConsumidorRegistrationForm()
     

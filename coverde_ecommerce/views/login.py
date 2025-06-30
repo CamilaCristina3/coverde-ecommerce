@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.urls import reverse
-from django.views import View
+from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.views import View
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from coverde_ecommerce.forms import LoginForm
 
 class LoginView(View):
@@ -18,15 +18,20 @@ class LoginView(View):
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+
+            # Define backend explicitamente se múltiplos forem usados
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
-            messages.success(request, f'Bem-vindo(a), {user.get_short_name()}!')
+
+            messages.success(request, f'Bem-vindo(a), {user.first_name}!')
             return redirect(self.get_redirect_url(user))
+
         messages.error(request, 'E-mail ou senha inválidos. Tente novamente.')
         return render(request, self.template_name, {'form': form})
 
     def get_redirect_url(self, user):
-        if user.tipo == 'P':
-            return reverse('coverde_ecommerce:produtor_dashboard')
-        elif user.tipo == 'C':
-            return reverse('coverde_ecommerce:consumidor_dashboard')
+        if user.tipo == 'P':  # Produtor
+            return reverse('coverde_ecommerce:dashboard_produtor')
+        elif user.tipo == 'C':  # Consumidor
+            return reverse('coverde_ecommerce:produto_list')
         return reverse('coverde_ecommerce:index')

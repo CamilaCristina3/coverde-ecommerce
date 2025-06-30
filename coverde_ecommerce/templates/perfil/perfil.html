@@ -14,47 +14,38 @@
                         <h4 class="mb-0">
                             <i class="bi bi-person-circle me-2"></i>Meu Perfil
                         </h4>
-                       <a href="{% url 'ecommerce_coverde:perfil-edit' %}" class="btn btn-primary">
-    <i class="fas fa-edit"></i> Editar Perfil
-</a>
+                        <a href="{% url 'coverde_ecommerce:perfil_edit' %}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Editar Perfil
+                        </a>
                     </div>
                 </div>
                 
                 <div class="card-body">
-        
                     <div class="row">
-                      
-                        
-                        <!-- Coluna das Informações -->
                         <div class="col-md-8">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <h5 class="text-muted">Nome Completo</h5>
                                     <p class="fs-5">{{ user.get_full_name|default:"Não informado" }}</p>
                                 </div>
-                                
                                 <div class="col-md-6 mb-3">
                                     <h5 class="text-muted">Email</h5>
                                     <p class="fs-5">{{ user.email }}</p>
                                 </div>
-                                
                                 <div class="col-md-6 mb-3">
                                     <h5 class="text-muted">Telefone</h5>
                                     <p class="fs-5">{{ user.telefone|default:"Não informado" }}</p>
                                 </div>
-                                
                                 <div class="col-md-6 mb-3">
                                     <h5 class="text-muted">NIF</h5>
                                     <p class="fs-5">{{ user.nif|default:"Não informado" }}</p>
                                 </div>
-                                
                                 {% if user.tipo == 'P' %}
                                 <div class="col-12 mb-3">
                                     <h5 class="text-muted">Nome da Empresa</h5>
                                     <p class="fs-5">{{ user.nome_empresa|default:"Não informado" }}</p>
                                 </div>
                                 {% endif %}
-                                
                                 <div class="col-12 mb-3">
                                     <h5 class="text-muted">Endereço</h5>
                                     <p class="fs-5">
@@ -65,23 +56,23 @@
                                         {% endif %}
                                     </p>
                                 </div>
-                                
+
                                 <div class="col-12 mt-4">
                                     <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                                       <a href="{% url 'ecommerce_coverde:password_change' %}" class="btn btn-outline-secondary">
-    <i class="fas fa-key me-2"></i>Alterar Senha
-</a>
-                                        <a href="{% url 'ecommerce_coverde:pedido_list' %}" 
-                                           class="btn btn-outline-primary">
+                                        <a href="{% url 'coverde_ecommerce:password_change' %}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-key me-2"></i> Alterar Senha
+                                        </a>
+                                        <a href="{% url 'coverde_ecommerce:pedido_list' %}" class="btn btn-outline-primary">
                                             <i class="bi bi-bag-check"></i> Meus Pedidos
                                         </a>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </div> <!-- /.col-md-8 -->
+                    </div> <!-- /.row -->
+                </div> <!-- /.card-body -->
+            </div> <!-- /.card -->
+
         </div>
     </div>
 </div>

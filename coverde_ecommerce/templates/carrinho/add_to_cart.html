@@ -2,16 +2,16 @@
 {
     "success": true,
     "product_id": {{ product_id }},
-    "product_name": "{{ product_name }}",
+    "product_name": "{{ product_name|escapejs }}",
     "quantity": {{ quantity }},
     "subtotal": "{{ subtotal|floatformat:2 }}",
     "cart_total": "{{ cart_total|floatformat:2 }}",
     "total_items": {{ total_items }},
-    "redirect_url": "{% url 'ecommerce_coverde:carrinho' %}"
+    "redirect_url": "{% url 'coverde_ecommerce:carrinho' %}"
 }
 {% else %}
 {
     "success": false,
-    "error": "{{ error }}"
+    "error": "{{ error|escapejs }}"
 }
 {% endif %}

@@ -24,7 +24,7 @@
 <!-- Navbar Acessível -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top shadow" aria-label="Navegação principal">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'ecommerce_coverde:index' %}" aria-label="Página inicial da COVERDE">
+        <a class="navbar-brand fw-bold" href="{% url 'coverde_ecommerce:index' %}" aria-label="Página inicial da COVERDE">
             <img src="{% static 'css/images/logo.png' %}" alt="Logo COVERDE" height="40">
         </a>
         
@@ -44,7 +44,7 @@
         <div class="collapse navbar-collapse" id="navbarMain">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'ecommerce_coverde:sobre' %}" aria-current="page">Sobre Nós</a>
+                    <a class="nav-link" href="{% url 'coverde_ecommerce:sobre' %}" aria-current="page">Sobre Nós</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="solucoesDropdown" role="button" 
@@ -52,8 +52,8 @@
                         Soluções
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="solucoesDropdown">
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:solucoes' %}?tipo=produtores">Para Produtores</a></li>
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:solucoes' %}?tipo=consumidores">Para Consumidores</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:solucoes' %}?tipo=produtores">Para Produtores</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:solucoes' %}?tipo=consumidores">Para Consumidores</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -62,17 +62,17 @@
                         Produtos
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="produtosDropdown">
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:listagem-produto' %}">Todos Produtos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:produto_list' %}">Todos Produtos</a></li>
                         <li><hr class="dropdown-divider"></li>
                         {% if categorias %}  <!-- Adicionada verificação para evitar erros -->
                         {% for categoria in categorias %}
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:produto-por-categoria' categoria.slug %}">{{ categoria.nome }}</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:produto-por-categoria' categoria.slug %}">{{ categoria.nome }}</a></li>
                         {% endfor %}
                         {% endif %}
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'ecommerce_coverde:contacto' %}">Contato</a>
+                    <a class="nav-link" href="{% url 'coverde_ecommerce:contacto' %}">Contato</a>
                 </li>
             </ul>
             
@@ -84,24 +84,24 @@
                         <i class="fas fa-user-circle me-1"></i> Minha Conta
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:perfil' %}">Perfil</a></li>
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:pedido_list' %}">Meus Pedidos</a></li>
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:favorito_list' %}">Favoritos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:perfil' %}">Perfil</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:pedido_list' %}">Meus Pedidos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:favorito_list' %}">Favoritos</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'ecommerce_coverde:logout' %}">Sair</a></li>
+                        <li><a class="dropdown-item" href="{% url 'coverde_ecommerce:logout' %}">Sair</a></li>
                     </ul>
                 </div>
-                <a href="{% url 'ecommerce_coverde:carrinho' %}" class="btn btn-outline-light ms-2 position-relative">
+           <a href="{% url 'coverde_ecommerce:index' %}" class="btn btn-outline-light ms-2 position-relative">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         {{ request.session.carrinho|length|default:"0" }}
                     </span>
                 </a>
                 {% else %}
-                <a href="{% url 'ecommerce_coverde:registration_choice' %}" class="btn btn-light me-2" aria-label="Registrar nova conta">
+                <a href="{% url 'coverde_ecommerce:registration_choice' %}" class="btn btn-light me-2" aria-label="Registrar nova conta">
                     <i class="fas fa-user-plus me-1" aria-hidden="true"></i> Registrar
                 </a>
-                <a href="{% url 'ecommerce_coverde:login' %}" class="btn btn-outline-light" aria-label="Fazer login">
+                <a href="{% url 'coverde_ecommerce:login' %}" class="btn btn-outline-light" aria-label="Fazer login">
                     <i class="fas fa-sign-in-alt me-1" aria-hidden="true"></i> Entrar
                 </a>
                 {% endif %}
@@ -155,22 +155,22 @@
                 <h2 class="h5 fw-bold mb-3">Links Úteis</h2>
                 <ul class="list-unstyled">
                     <li class="mb-2">
-                        <a href="{% url 'ecommerce_coverde:sobre' %}" class="text-white-50 text-decoration-none hover-white">
+                        <a href="{% url 'coverde_ecommerce:sobre' %}" class="text-white-50 text-decoration-none hover-white">
                             <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> Sobre Nós
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="{% url 'ecommerce_coverde:termos_condicoes' %}" class="text-white-50 text-decoration-none hover-white">
+                        <a href="{% url 'coverde_ecommerce:termos_condicoes' %}" class="text-white-50 text-decoration-none hover-white">
                             <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> Termos de Serviço
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="{% url 'ecommerce_coverde:politica_privacidade' %}" class="text-white-50 text-decoration-none hover-white">
+                        <a href="{% url 'coverde_ecommerce:politica_privacidade' %}" class="text-white-50 text-decoration-none hover-white">
                             <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> Política de Privacidade
                         </a>
                     </li>
                     <li class="mb-2">
-                        <a href="{% url 'ecommerce_coverde:faq' %}" class="text-white-50 text-decoration-none hover-white">
+                        <a href="{% url 'coverde_ecommerce:faq' %}" class="text-white-50 text-decoration-none hover-white">
                             <i class="fas fa-chevron-right me-2 small" aria-hidden="true"></i> FAQ
                         </a>
                     </li>

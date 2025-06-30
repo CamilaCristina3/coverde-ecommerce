@@ -8,7 +8,7 @@ from ..models import Favorito, Produto
 
 class FavoritosListView(LoginRequiredMixin, ListView):
     model = Favorito
-    template_name = 'coverde_ecommerce/favoritos/favorito_list.html'  # <-- CORRETO
+    template_name = 'favoritos/favorito_list.html'  # <-- CORRETO
     context_object_name = 'favoritos'
 
 

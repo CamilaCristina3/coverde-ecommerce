@@ -55,7 +55,7 @@ from  coverde_ecommerce.views.pedido import (
     CheckoutView, CheckoutSuccessView  # ✅ Adicione isto
 )
 
-app_name = 'ecommerce_coverde'
+app_name = 'coverde_ecommerce'
 
 urlpatterns = [
     # ===== PÁGINAS INSTITUCIONAIS =====
@@ -76,35 +76,35 @@ urlpatterns = [
 
     # ===== RECUPERAÇÃO DE SENHA =====
     path('conta/recuperar-passe/', auth_views.PasswordResetView.as_view(
-        template_name='ecommerce_coverde/registration/password_reset_pt.html',
-        email_template_name='ecommerce_coverde/registration/password_reset_email_pt.html',
-        subject_template_name='ecommerce_coverde/registration/password_reset_subject_pt.txt'
+        template_name='coverde_ecommerce/registration/password_reset_pt.html',
+        email_template_name='coverde_ecommerce/registration/password_reset_email_pt.html',
+        subject_template_name='coverde_ecommerce/registration/password_reset_subject_pt.txt'
     ), name='password_reset'),
 
     path('conta/recuperar-passe/concluido/', auth_views.PasswordResetDoneView.as_view(
-        template_name='ecommerce_coverde/registration/password_reset_done_pt.html'
+        template_name='coverde_ecommerce/registration/password_reset_done_pt.html'
     ), name='password_reset_done'),
 
     path('conta/recuperar-passe/confirmar/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
-        template_name='ecommerce_coverde/registration/password_reset_confirm_pt.html'
+        template_name='coverde_ecommerce/registration/password_reset_confirm_pt.html'
     ), name='password_reset_confirm'),
 
     path('conta/recuperar-passe/completo/', auth_views.PasswordResetCompleteView.as_view(
-        template_name='ecommerce_coverde/registration/password_reset_complete_pt.html'
+        template_name='coverde_ecommerce/registration/password_reset_complete_pt.html'
     ), name='password_reset_complete'),
 
     # ===== ALTERAÇÃO DE SENHA (NOVAS URLs) =====
     path('conta/alterar-passe/', auth_views.PasswordChangeView.as_view(
-        template_name='ecommerce_coverde/registration/password_change_pt.html'
+        template_name='coverde_ecommerce/registration/password_change_pt.html'
     ), name='password_change'),
     
     path('conta/alterar-passe/concluido/', auth_views.PasswordChangeDoneView.as_view(
-        template_name='ecommerce_coverde/registration/password_change_done_pt.html'
+        template_name='coverde_ecommerce/registration/password_change_done_pt.html'
     ), name='password_change_done'),
 
     # ===== PERFIL E DASHBOARDS =====
 path('perfil/', PerfilView.as_view(), name='perfil'),
-path('perfil/editar/', PerfilUpdateView.as_view(), name='perfil-edit'),
+path('perfil/editar/', PerfilUpdateView.as_view(), name='perfil_edit'),
 path('dashboard/produtor/', ProdutorDashboardView.as_view(), name='produtor_dashboard'),
 path('dashboard/consumidor/', ConsumidorDashboardView.as_view(), name='consumidor_dashboard'),
 path('produto/adicionar/', AdicionarProdutoView.as_view(), name='adicionar_produto'),
@@ -118,7 +118,7 @@ path('categorias/<int:pk>/excluir/', CategoriaDeleteView.as_view(), name='catego
     path('categoria/<slug:slug>/', ProdutoListView.as_view(), name='produto-por-categoria'),
 
     # ===== PRODUTOS =====
-    path('produtos/', ProdutoListView.as_view(), name='listagem-produto'),
+    path('produtos/', ProdutoListView.as_view(), name='produto_list'),
     path('produtos/<slug:slug>/', ProdutoDetailView.as_view(), name='detalhe-produto'),
     path('produtos/busca/', ProdutoSearchView.as_view(), name='produto-busca'),
     path('produtos/<int:produto_id>/favorito/', AdicionarFavoritoView.as_view(), name='produto-favorito'),

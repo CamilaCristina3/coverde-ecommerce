@@ -47,15 +47,18 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+ROOT_URLCONF = 'projetoPDI.urls'
 
-ROOT_URLCONF = 'backend.urls'
 
 # Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'coverde_ecommerce', 'templates')],
         'APP_DIRS': True,
+        'DIRS': [
+            os.path.join(BASE_DIR, 'loja', 'templates'),
+            os.path.join(BASE_DIR, 'coverde_ecommerce', 'templates'),
+        ],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -70,7 +73,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+
+WSGI_APPLICATION = 'projetoPDI.wsgi.application'
 
 # Base de dados
 DATABASES = {

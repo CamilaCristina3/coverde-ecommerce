@@ -6,7 +6,7 @@ from coverde_ecommerce.models import Produto, Favorito  # Importação absoluta 
 
 class ProdutoListView(ListView):
     model = Produto
-    template_name = 'coverde_ecommerce/produto/listagem-produto.html'
+    template_name = 'produto/produto_list.html'
     context_object_name = 'produtos'
     paginate_by = 12
 
@@ -15,7 +15,7 @@ class ProdutoListView(ListView):
 
 class ProdutoDetailView(DetailView):
      model = Produto
-     template_name = 'coverde_ecommerce/produto/detalhe-produto.html'
+     template_name = 'produto/detalhe-produto.html'
      slug_url_kwarg = 'slug'  # Isso define que o parâmetro na URL é 'slug'
      slug_field = 'slug'
      context_object_name = 'produto'

@@ -11,8 +11,8 @@ from ..forms import PedidoForm, CheckoutForm
 
 class PedidoListView(LoginRequiredMixin, ListView):
     model = Pedido
-    template_name = 'coverde_ecommerce/pedido/pedido_list.html'
-    context_object_name = 'pedidos'
+    template_name = 'pedido/pedido_list.html'
+    context_object_name = 'pedido'
     paginate_by = 10
     
     def get_queryset(self):
