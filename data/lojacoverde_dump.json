@@ -1,0 +1,467 @@
+[
+{
+  "model": "coverde_ecommerce.utilizador",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$5Fsyvr2dRHlhevp0r4v98z$PkWTniimDJ9bx906gFd/mbv/psbMYcMhzWFxX+9MSRM=",
+    "last_login": "2025-06-30T09:43:37.022Z",
+    "is_superuser": false,
+    "first_name": "Carlos Alberto",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-30T08:12:35.331Z",
+    "email": "carlos.alberto@gmail.com",
+    "tipo": "C",
+    "telefone": "912 345 678",
+    "nif": null,
+    "morada": "Dom Joao 12 1",
+    "codigo_postal": "3030-123",
+    "localidade": "COIMBRA",
+    "imagem_perfil": "",
+    "data_registo": "2025-06-30T08:12:36.136Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "coverde_ecommerce.utilizador",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$fGGsM3Esjbmpy8IMYCtwOR$K4i8szy4pIwLg7CaMy92xI6pnkoIppNhHF+kDj6qZUI=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Maria Silva",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-30T10:14:16.312Z",
+    "email": "maria.silva@email.com",
+    "tipo": "C",
+    "telefone": "+351914567345",
+    "nif": "294587234",
+    "morada": "Av. Principal, 89",
+    "codigo_postal": "4000-234",
+    "localidade": "Porto",
+    "imagem_perfil": "",
+    "data_registo": "2025-06-30T10:14:17.154Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "coverde_ecommerce.utilizador",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$cYZukkaSbZWAAAvYhmANe5$nvuYx/05wjtEHm0ZAg1aKMKroMUnkPeilsrpEjckmm8=",
+    "last_login": "2025-06-30T17:06:50.759Z",
+    "is_superuser": true,
+    "first_name": "Camila",
+    "last_name": "Cristina",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-06-30T10:52:26.323Z",
+    "email": "a2023110951@alumni.iscac.pt",
+    "tipo": "A",
+    "telefone": null,
+    "nif": null,
+    "morada": null,
+    "codigo_postal": null,
+    "localidade": null,
+    "imagem_perfil": "",
+    "data_registo": "2025-06-30T10:52:26.636Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "coverde_ecommerce.utilizador",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$c7oVgf6iM5uaTNdoa81ZCt$pvRGBZzJDRVtSdY5sRcKjd9joQEvUCpdk0zE2UnaVq4=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "João",
+    "last_name": "Silva",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-30T13:35:55.151Z",
+    "email": "joao@hortaverde.pt",
+    "tipo": "P",
+    "telefone": null,
+    "nif": null,
+    "morada": null,
+    "codigo_postal": null,
+    "localidade": null,
+    "imagem_perfil": "",
+    "data_registo": "2025-06-30T13:35:56.097Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "coverde_ecommerce.utilizador",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$VcWuCL2TwNCBzh8Qt0P0Gn$gz6cVyl/Kf6q8/hsVZsY5ErQRAqdRyb2vzR09qCRyGA=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Maria",
+    "last_name": "Oliveira",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-30T14:00:59.201Z",
+    "email": "maria@biofrut.pt",
+    "tipo": "P",
+    "telefone": null,
+    "nif": null,
+    "morada": null,
+    "codigo_postal": null,
+    "localidade": null,
+    "imagem_perfil": "",
+    "data_registo": "2025-06-30T14:01:00.115Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "coverde_ecommerce.utilizador",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$r5h6rnWrpGPPms67rLcDEL$VRHClnANRoIYEIXVun/6t+kZOE24/P0FG9jrfKIYOqU=",
+    "last_login": "2025-06-30T23:24:05.383Z",
+    "is_superuser": false,
+    "first_name": "Piedade",
+    "last_name": "Macarala",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-30T14:37:25.336Z",
+    "email": "lindamacarala1989@gmail.com",
+    "tipo": "C",
+    "telefone": "+351912000678",
+    "nif": null,
+    "morada": "Elisio, 67, 4",
+    "codigo_postal": "3030-321",
+    "localidade": "Coimbra",
+    "imagem_perfil": "",
+    "data_registo": "2025-06-30T14:37:25.918Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "coverde_ecommerce.categoria",
+  "pk": 1,
+  "fields": {
+    "nome": "verduras",
+    "slug": "verduras",
+    "descricao": "São hortícolas em que a parte comestível são os frutos, sementes ou outras estruturas da planta, geralmente com textura mais firme.",
+    "icone": "fa-leaf",
+    "ordem_menu": 5
+  }
+},
+{
+  "model": "coverde_ecommerce.categoria",
+  "pk": 2,
+  "fields": {
+    "nome": "Legumes",
+    "slug": "legumes",
+    "descricao": "",
+    "icone": "fa-leaf",
+    "ordem_menu": 0
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 1,
+  "fields": {
+    "nome": "Alface",
+    "slug": "alface",
+    "descricao": "Alface fresca, crocante e rica em fibras. Ideal para saladas e sanduíches.",
+    "preco": "5.00",
+    "unidade": "cx",
+    "stock": 25,
+    "imagem": "produtos/alface/c3854df46fc84701b4a33e6fedb93e91.png",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-25",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:36:22.094Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 2,
+  "fields": {
+    "nome": "Espinafre",
+    "slug": "espinafre",
+    "descricao": "Folhas verdes escuras, ricas em ferro e vitaminas. Perfeito para sopas, salteados ou crus.",
+    "preco": "1.00",
+    "unidade": "kg",
+    "stock": 30,
+    "imagem": "produtos/espinafre/4a11dd4f32e0454fb0a8243f9946c33f.jpg",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:39:56.087Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 3,
+  "fields": {
+    "nome": "Couve Tronchuda",
+    "slug": "couve-tronchuda",
+    "descricao": "Couve tradicional portuguesa, usada em pratos típicos como o caldo verde.",
+    "preco": "2.00",
+    "unidade": "kg",
+    "stock": 25,
+    "imagem": "produtos/couve-tronchuda/2725d8e7b9a1495095c31d0bca2dba26.png",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:41:24.177Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 4,
+  "fields": {
+    "nome": "Brócolos",
+    "slug": "brocolos",
+    "descricao": "Ramo de brócolos frescos, ricos em antioxidantes e ideais para cozer ou grelhar.",
+    "preco": "4.00",
+    "unidade": "kg",
+    "stock": 19,
+    "imagem": "produtos/brocolos/5203e2d7cd85400cbe79d2a3a7f40674.png",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:43:00.435Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 5,
+  "fields": {
+    "nome": "Rúcula",
+    "slug": "rucula",
+    "descricao": "Folha levemente picante, muito usada em saladas ou como toque final em pizzas e massas.",
+    "preco": "2.18",
+    "unidade": "kg",
+    "stock": 14,
+    "imagem": "produtos/rucula/f1e839183635472f9a4303f1fa28d1b4.jpg",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:44:21.156Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 6,
+  "fields": {
+    "nome": "Cenoura",
+    "slug": "cenoura",
+    "descricao": "Raízes crocantes e doces. Pode ser consumida crua, cozida ou em sumos.",
+    "preco": "1.00",
+    "unidade": "kg",
+    "stock": 100,
+    "imagem": "produtos/cenoura/168083caf13c43b8ab7dad6327b76314.png",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:45:30.532Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 7,
+  "fields": {
+    "nome": "Nabo",
+    "slug": "nabo",
+    "descricao": "Raiz de sabor suave e textura firme. Muito usado em sopas ou estufados.",
+    "preco": "6.00",
+    "unidade": "kg",
+    "stock": 10,
+    "imagem": "produtos/nabo/b9ab27486863470c9bc4fe87e05d44c8.jpg",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:49:46.124Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 8,
+  "fields": {
+    "nome": "Beterraba",
+    "slug": "beterraba",
+    "descricao": "Raiz de cor intensa e sabor adocicado. Excelente em saladas, sumos ou assados.",
+    "preco": "4.00",
+    "unidade": "kg",
+    "stock": 12,
+    "imagem": "produtos/beterraba/bbe72ebae0b944728da5b6822570dc44.webp",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:51:13.449Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 9,
+  "fields": {
+    "nome": "Abóbora",
+    "slug": "abobora",
+    "descricao": "Polpa macia e doce, rica em vitamina A. Ideal para sopas, purés e sobremesas.",
+    "preco": "49.99",
+    "unidade": "g",
+    "stock": 34,
+    "imagem": "produtos/abobora/205e00f4e2834805864e3a1746323bac.webp",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:53:14.612Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 10,
+  "fields": {
+    "nome": "Curguetes",
+    "slug": "curguetes",
+    "descricao": "Legume versátil, com textura suave. Ótima grelhada, em sopas ou ratatouille.",
+    "preco": "1.00",
+    "unidade": "un",
+    "stock": 23,
+    "imagem": "produtos/curguetes/5d40b80408bc4822a042a99d69730fde.jpg",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": true,
+    "data_criacao": "2025-06-30T13:54:42.638Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 11,
+  "fields": {
+    "nome": "PEpino",
+    "slug": "pepino",
+    "descricao": "Refrescante e crocante, ideal para saladas, águas aromatizadas ou sumos.",
+    "preco": "2.00",
+    "unidade": "kg",
+    "stock": 5,
+    "imagem": "produtos/pepino/34b570e1a2034a85a5e0f9151466eccb.webp",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:55:51.331Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 12,
+  "fields": {
+    "nome": "Pimento",
+    "slug": "pimento",
+    "descricao": "Colorido e saboroso. Usado cru, assado ou salteado. Rico em vitamina C.",
+    "preco": "5.00",
+    "unidade": "kg",
+    "stock": 40,
+    "imagem": "produtos/pimento/2011affb68a84b7bada120858d964804.png",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 1,
+    "produtor": 4,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": false,
+    "data_criacao": "2025-06-30T13:57:25.623Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.produto",
+  "pk": 13,
+  "fields": {
+    "nome": "Tomate",
+    "slug": "tomate",
+    "descricao": "Fruto essencial da cozinha mediterrânica. Ideal para saladas, molhos ou assado.",
+    "preco": "6.00",
+    "unidade": "cx",
+    "stock": 5,
+    "imagem": "produtos/tomate/12b449e858e34866bde23ea57df6fbc7.webp",
+    "disponivel": true,
+    "destaque": false,
+    "categoria": 2,
+    "produtor": 5,
+    "data_colheita": "2025-06-30",
+    "certificado_biologico": true,
+    "data_criacao": "2025-06-30T14:04:54.526Z"
+  }
+},
+{
+  "model": "coverde_ecommerce.pedido",
+  "pk": 1,
+  "fields": {
+    "codigo": "36a3d216-fb4f-4231-b3bd-16aab118b116",
+    "utilizador": 6,
+    "data_criacao": "2025-06-30T18:58:20.388Z",
+    "status": "pendente",
+    "total": "25.00",
+    "endereco_entrega": "Elisio, 67, 4",
+    "metodo_pagamento": "cartao"
+  }
+},
+{
+  "model": "coverde_ecommerce.itempedido",
+  "pk": 1,
+  "fields": {
+    "pedido": 1,
+    "produto": 1,
+    "quantidade": 5,
+    "preco": "5.00"
+  }
+},
+{
+  "model": "coverde_ecommerce.itempedido",
+  "pk": 2,
+  "fields": {
+    "pedido": 1,
+    "produto": 4,
+    "quantidade": 5,
+    "preco": "4.00"
+  }
+}
+]
